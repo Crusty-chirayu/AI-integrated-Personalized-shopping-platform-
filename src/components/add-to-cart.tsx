@@ -1,47 +1,78 @@
 "use client";
 
-import { useState } from "react";
-import { ArrowRight, Plus, Minus } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
 import { useCart } from "@/contexts/cart-context";
+import { toast } from "sonner"; 
 import type { Product } from "@/lib/storefront-data";
+import { motion, AnimatePresence } from "framer-motion";
 
-export function AddToCart({ product }: { product: Product }) {
-  const { addItem } = useCart();
-  const [quantity, setQuantity] = useState(1);
+interface AddToCartProps {
+  product: Product;
+  compact?: boolean;
+}
+
+export function AddToCart({
+  product,
+  compact = false,
+}: AddToCartProps) {
+
+
+const { addItem, removeItem, isInCart } = useCart();
+
+const added = isInCart(product.id);
+
+const handleClick = () => {
+  if (added) {
+    removeItem(product.id);
+
+    toast.info(`${product.title} removed from cart`);
+  } else {
+    addItem(product);
+
+    toast.success(`${product.title} added to cart`);
+  }
+};
+
+
 
   return (
-    <div className="mt-8 space-y-4">
-      <div className="flex items-center gap-3">
-        <div className="flex items-center rounded-full border border-black/10 bg-white p-1">
-          <button
-            type="button"
-            className="rounded-full p-2 text-zinc-700"
-            onClick={() => setQuantity((value) => Math.max(1, value - 1))}
-          >
-            <Minus className="h-4 w-4" />
-          </button>
-          <span className="min-w-[2rem] text-center text-sm font-medium">{quantity}</span>
-          <button
-            type="button"
-            className="rounded-full p-2 text-zinc-700"
-            onClick={() => setQuantity((value) => value + 1)}
-          >
-            <Plus className="h-4 w-4" />
-          </button>
-        </div>
-        <button
-          type="button"
-          onClick={() => {
-            for (let i = 0; i < quantity; i += 1) {
-              addItem(product);
-            }
-          }}
-          className="inline-flex items-center gap-2 rounded-full bg-zinc-950 px-6 py-3 text-sm font-medium text-white transition hover:bg-zinc-800"
-        >
-          Add to cart
-          <ArrowRight className="h-4 w-4" />
-        </button>
-      </div>
-    </div>
+<motion.button
+  whileTap={{ scale: 0.94 }}
+  whileHover={{ scale: 1.03 }}
+  transition={{ type: "spring", stiffness: 400, damping: 20 }}
+  onClick={handleClick}
+  className={`flex w-full items-center justify-center gap-2 rounded-xl font-medium transition-all duration-300 ${
+    added
+      ? "bg-indigo-600 text-white hover:bg-indigo-700"
+      : "border border-zinc-300 bg-white text-zinc-900 hover:border-indigo-500 hover:text-indigo-600"
+  } ${compact ? "px-4 py-2.5 text-sm" : "px-5 py-3"}`}
+>
+  <AnimatePresence mode="wait">
+    {added ? (
+      <motion.span
+        key="added"
+        initial={{ opacity: 0, scale: 0.7 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.7 }}
+        transition={{ duration: 0.2 }}
+        className="flex items-center gap-2"
+      >
+        ✓ In Cart
+      </motion.span>
+    ) : (
+      <motion.span
+        key="add"
+        initial={{ opacity: 0, scale: 0.7 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.7 }}
+        transition={{ duration: 0.2 }}
+        className="flex items-center gap-2"
+      >
+        <ShoppingCart className="h-4 w-4" />
+        Add
+      </motion.span>
+    )}
+  </AnimatePresence>
+</motion.button>
   );
 }

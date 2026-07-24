@@ -1,12 +1,20 @@
 import Link from "next/link";
-import { LayoutDashboard, Package, ShoppingCart, Settings, Users, WandSparkles } from "lucide-react";
-import { AdminAuthGuard } from "@/components/admin-auth-guard";
+import {
+  LayoutDashboard,
+  Package,
+  ShoppingCart,
+  Settings,
+  Users,
+  FileText,
+  WandSparkles,
+} from "lucide-react";import { AdminAuthGuard } from "@/components/admin-auth-guard";
 
 const items = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/products", label: "Products", icon: Package },
   { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
   { href: "/admin/customers", label: "Customers", icon: Users },
+  { href: "/admin/reports", label: "Reports", icon: FileText },
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
 

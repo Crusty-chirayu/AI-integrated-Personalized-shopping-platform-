@@ -2,6 +2,8 @@
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import type { Product } from "@/lib/storefront-data";
+import { getCurrentUser } from "@/lib/auth";
+import { getCart, saveCart } from "@/lib/services/cart.service";
 
 type CartItem = {
   product: Product;
@@ -12,6 +14,7 @@ type CartContextValue = {
   items: CartItem[];
   addItem: (product: Product) => void;
   removeItem: (productId: string) => void;
+  isInCart: (productId: string) => boolean;
   updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
   itemCount: number;
@@ -32,16 +35,62 @@ function loadCart(): CartItem[] {
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
+  const [userId, setUserId] = useState<string | null>(null);
 
-  useEffect(() => {
-    setItems(loadCart());
-  }, []);
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem("cartiq-cart", JSON.stringify(items));
+
+
+
+useEffect(() => {
+  async function init() {
+    const user = await getCurrentUser();
+
+    if (!user) {
+      setItems(loadCart());
+      return;
     }
-  }, [items]);
+
+    setUserId(user.id);
+
+    const { data } = await getCart(user.id);
+
+    if (data && data.length > 0) {
+      const cloudItems = data.map((item: any) => ({
+        product: item.products,
+        quantity: item.quantity,
+      }));
+
+      setItems(cloudItems);
+    } else {
+      setItems(loadCart());
+    }
+  }
+
+  init();
+}, []);
+
+
+useEffect(() => {
+  if (typeof window !== "undefined") {
+    window.localStorage.setItem(
+      "cartiq-cart",
+      JSON.stringify(items)
+    );
+  }
+
+  if (!userId) return;
+
+  saveCart(
+    userId,
+    items.map((item) => ({
+      product_id: item.product.id,
+      quantity: item.quantity,
+    }))
+  );
+}, [items, userId]);
+
+
+
 
   const addItem = (product: Product) => {
     setItems((current) => {
@@ -56,6 +105,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const removeItem = (productId: string) => {
     setItems((current) => current.filter((item) => item.product.id !== productId));
   };
+
+  const isInCart = (productId: string) => {
+  return items.some((item) => item.product.id === productId);
+};
 
   const updateQuantity = (productId: string, quantity: number) => {
     setItems((current) =>
@@ -74,15 +127,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       return sum + unitPrice * item.quantity;
     }, 0);
 
-    return {
-      items,
-      addItem,
-      removeItem,
-      updateQuantity,
-      clearCart,
-      itemCount,
-      subtotal,
-    };
+return {
+  items,
+  addItem,
+  removeItem,
+  isInCart,
+  updateQuantity,
+  clearCart,
+  itemCount,
+  subtotal,
+};
   }, [items]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

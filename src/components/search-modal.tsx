@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { getSupabaseClient } from "@/lib/supabase";
+import { formatCurrency } from "@/lib/formatCurrency";
 
 export function SearchModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [query, setQuery] = useState("");
@@ -11,42 +12,52 @@ export function SearchModal({ open, onClose }: { open: boolean; onClose: () => v
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const search = async (searchTerm: string) => {
-    setLoading(true);
-    const client = getSupabaseClient();
-    if (!client) {
-      setResults([]);
-      setLoading(false);
-      return;
+const search = async (searchTerm: string) => {
+  setLoading(true);
+
+  try {
+    const response = await fetch(
+      `/api/search?q=${encodeURIComponent(searchTerm)}`
+    );
+
+    if (!response.ok) {
+      throw new Error("Search failed");
     }
 
-    const { data } = await client
-      .from("products")
-      .select("id,title,slug,price,product_images(image_url)")
-      .or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,tags.cs.{${searchTerm}}`)
-      .limit(12);
+    const data = await response.json();
 
     setResults(
       (data ?? []).map((item: any) => ({
         id: item.id,
         title: item.title,
         slug: item.slug,
-        image: item.product_images?.[0]?.image_url ?? "https://images.unsplash.com/photo-1522292476735-2c3f01d7c8c8?auto=format&fit=crop&w=900&q=80",
+        image:
+          item.product_images?.[0]?.image_url ??
+          "https://images.unsplash.com/photo-1522292476735-2c3f01d7c8c8?auto=format&fit=crop&w=900&q=80",
         price: Number(item.price) || 0,
       }))
     );
+  } catch (error) {
+    console.error(error);
+    setResults([]);
+  } finally {
     setLoading(false);
-  };
+  }
+};
 
-  const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    setQuery(value);
-    if (value.length >= 2) {
-      search(value);
-    } else {
-      setResults([]);
-    }
-  };
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const term = query.trim();
+
+      if (term.length >= 2) {
+        search(term);
+      } else {
+        setResults([]);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [query]);
 
   const handleSelect = (slug: string) => {
     onClose();
@@ -66,7 +77,7 @@ export function SearchModal({ open, onClose }: { open: boolean; onClose: () => v
         </div>
         <input
           value={query}
-          onChange={handleChange}
+          onChange={(e) => setQuery(e.target.value)}
           autoFocus
           placeholder="Search for products, categories, or tags"
           className="mt-6 h-14 w-full rounded-full border border-black/10 bg-[#f7f3eb] px-5 text-lg outline-none"
@@ -85,7 +96,7 @@ export function SearchModal({ open, onClose }: { open: boolean; onClose: () => v
                   <img src={product.image} alt={product.title} className="h-16 w-16 rounded-[18px] object-cover" />
                   <div>
                     <p className="font-semibold text-zinc-950">{product.title}</p>
-                    <p className="text-sm text-zinc-600">${product.price.toFixed(2)}</p>
+                    <p className="text-sm text-zinc-600">{formatCurrency(product.price)}</p>
                   </div>
                 </button>
               ))}

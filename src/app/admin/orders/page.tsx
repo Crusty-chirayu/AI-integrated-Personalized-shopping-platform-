@@ -1,4 +1,6 @@
 import { getSupabaseAdmin } from "@/lib/supabase-server";
+import { formatCurrency } from "@/lib/formatCurrency";
+import OrderFulfillmentCell from "./OrderFulfillmentCell";
 
 type OrderRow = {
   id: string;
@@ -37,6 +39,7 @@ export default async function AdminOrdersPage() {
               <th className="px-4 py-3">Total</th>
               <th className="px-4 py-3">Payment</th>
               <th className="px-4 py-3">Fulfillment</th>
+              <th className="px-4 py-3">Action</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-black/5 text-sm text-zinc-700">
@@ -44,9 +47,12 @@ export default async function AdminOrdersPage() {
               <tr key={order.id}>
                 <td className="px-4 py-3 font-medium text-zinc-900">{order.order_number ?? order.id}</td>
                 <td className="px-4 py-3">{order.email ?? "Guest"}</td>
-                <td className="px-4 py-3">${order.total?.toFixed(2) ?? "0.00"}</td>
+                <td className="px-4 py-3">{formatCurrency(order.total)}</td>
                 <td className="px-4 py-3">{order.payment_status ?? "pending"}</td>
-                <td className="px-4 py-3">{order.fulfillment_status ?? "pending"}</td>
+                <OrderFulfillmentCell
+                  orderId={order.id}
+                  initialStatus={order.fulfillment_status}
+                />
               </tr>
             ))}
           </tbody>

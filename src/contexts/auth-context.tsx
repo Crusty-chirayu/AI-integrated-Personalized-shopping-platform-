@@ -73,29 +73,71 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => listener.subscription.unsubscribe();
   }, []);
 
-  const signIn = async (email: string, password: string) => {
-    const client = getSupabaseClient();
-    if (!client) return;
-    await client.auth.signInWithPassword({ email, password });
-  };
 
-  const signUp = async (email: string, password: string) => {
-    const client = getSupabaseClient();
-    if (!client) return;
-    await client.auth.signUp({ email, password });
-  };
 
-  const signInWithGoogle = async () => {
-    const client = getSupabaseClient();
-    if (!client) return;
-    await client.auth.signInWithOAuth({ provider: "google" });
-  };
 
-  const signOut = async () => {
-    const client = getSupabaseClient();
-    if (!client) return;
-    await client.auth.signOut();
-  };
+
+const signIn = async (email: string, password: string) => {
+  console.log("Starting login...");
+
+  const client = getSupabaseClient();
+
+  if (!client) {
+    console.log("Supabase client is NULL");
+    throw new Error("Supabase client not available.");
+  }
+
+  console.log("Calling Supabase...");
+
+  const { data, error } = await client.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  console.log("Supabase response:", data, error);
+
+  if (error) {
+    throw error;
+  }
+};
+
+const signUp = async (email: string, password: string) => {
+  const client = getSupabaseClient();
+  if (!client) throw new Error("Supabase client not available.");
+
+  const { error } = await client.auth.signUp({
+    email,
+    password,
+  });
+
+  if (error) {
+    throw error;
+  }
+};
+
+const signInWithGoogle = async () => {
+  const client = getSupabaseClient();
+  if (!client) throw new Error("Supabase client not available.");
+
+  const { error } = await client.auth.signInWithOAuth({
+    provider: "google",
+  });
+
+  if (error) {
+    throw error;
+  }
+};
+
+const signOut = async () => {
+  const client = getSupabaseClient();
+  if (!client) throw new Error("Supabase client not available.");
+
+  const { error } = await client.auth.signOut();
+
+  if (error) {
+    throw error;
+  }
+};
 
   const value = useMemo(
     () => ({ user, loading, isAdmin: Boolean(user?.role === "admin"), signIn, signUp, signInWithGoogle, signOut }),

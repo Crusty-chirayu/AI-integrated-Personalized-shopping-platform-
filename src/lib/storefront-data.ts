@@ -2,13 +2,25 @@ export type Product = {
   id: string;
   title: string;
   slug: string;
+
   price: number;
   salePrice?: number;
+
   category: string;
+
+  // Primary image
   image: string;
+
+  specifications?: Record<string, string>;
+
+
+images?: string[];
   badge?: string;
+
   rating: number;
+
   description: string;
+
   stock: number;
 };
 
@@ -104,14 +116,14 @@ export const products: Product[] = [
 export const testimonials = [
   {
     quote: "Every detail feels intentional and calm.",
-    author: "Mina, Brooklyn",
+    author: "Mina, Bangalore",
   },
   {
     quote: "The quality is exceptional and the packaging is beautiful.",
-    author: "Chris, Austin",
+    author: "Krishna, Bihar",
   },
   {
     quote: "A store that truly understands quiet luxury.",
-    author: "Nadia, Chicago",
+    author: "Nadia, Jaipur",
   },
 ];

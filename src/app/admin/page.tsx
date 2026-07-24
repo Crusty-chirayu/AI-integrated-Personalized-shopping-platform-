@@ -1,13 +1,56 @@
 import { BarChart3, Package2, ShoppingBag, Users2 } from "lucide-react";
+import { getSupabaseAdmin } from "@/lib/supabase-server";
+import { formatCurrency } from "@/lib/formatCurrency";
 
-const stats = [
-  { label: "Revenue", value: "$84.2K", change: "+12.4%" },
-  { label: "Orders", value: "1,248", change: "+8.1%" },
-  { label: "Customers", value: "632", change: "+4.6%" },
-  { label: "Avg. order", value: "$67.5", change: "+2.3%" },
-];
+function capitalize(value: string | null | undefined) {
+  if (!value) return "Unknown";
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
 
-export default function AdminHomePage() {
+export default async function AdminHomePage() {
+  const supabase = getSupabaseAdmin();
+
+  const [ordersResult, profilesCountResult, recentOrdersResult, lowStockResult] = supabase
+    ? await Promise.all([
+supabase
+  .from("orders")
+  .select("total")
+  .eq("payment_status", "paid"),
+          supabase.from("profiles").select("id", { count: "exact", head: true }),
+        supabase
+          .from("orders")
+          .select("order_number, payment_status, fulfillment_status, created_at")
+          .order("created_at", { ascending: false })
+          .limit(5),
+        supabase
+          .from("products")
+          .select("id, title, stock_quantity")
+.lte("stock_quantity", 5)
+          .order("stock_quantity", { ascending: true }),
+      ])
+    : [
+        { data: [], error: null },
+        { count: 0, error: null },
+        { data: [], error: null },
+        { data: [], error: null },
+      ];
+
+  const orders = ordersResult.data ?? [];
+  const orderCount = orders.length;
+  const revenue = orders.reduce((sum, order) => sum + Number(order.total ?? 0), 0);
+  const customerCount = profilesCountResult.count ?? 0;
+  const averageOrder = orderCount > 0 ? revenue / orderCount : 0;
+
+  const recentOrders = recentOrdersResult.data ?? [];
+  const lowStockProducts = lowStockResult.data ?? [];
+
+  const stats = [
+    { label: "Revenue", value: formatCurrency(revenue) },
+    { label: "Orders", value: orderCount.toLocaleString("en-IN") },
+    { label: "Customers", value: customerCount.toLocaleString("en-IN") },
+    { label: "Avg. order", value: formatCurrency(averageOrder) },
+  ];
+
   return (
     <div className="space-y-8">
       <div>
@@ -24,7 +67,6 @@ export default function AdminHomePage() {
               </div>
             </div>
             <p className="mt-5 text-3xl font-semibold text-zinc-950">{stat.value}</p>
-            <p className="mt-2 text-sm text-emerald-600">{stat.change}</p>
           </div>
         ))}
       </div>
@@ -32,20 +74,36 @@ export default function AdminHomePage() {
         <div className="rounded-[28px] border border-black/5 bg-white p-6 shadow-sm">
           <h2 className="text-lg font-semibold text-zinc-950">Recent orders</h2>
           <div className="mt-6 space-y-3">
-            {["ORD-1024", "ORD-1023", "ORD-1022"].map((order) => (
-              <div key={order} className="flex items-center justify-between rounded-2xl bg-[#f7f3eb] px-4 py-3 text-sm text-zinc-600">
-                <span>{order}</span>
-                <span>Paid · Shipped</span>
+            {recentOrders.length > 0 ? (
+              recentOrders.map((order) => (
+                <div key={order.order_number} className="flex items-center justify-between rounded-2xl bg-[#f7f3eb] px-4 py-3 text-sm text-zinc-600">
+                  <span>{order.order_number}</span>
+                  <span>
+                    {capitalize(order.payment_status)} · {capitalize(order.fulfillment_status)}
+                  </span>
+                </div>
+              ))
+            ) : (
+              <div className="rounded-2xl bg-[#f7f3eb] px-4 py-3 text-sm text-zinc-600">
+                No recent orders.
               </div>
-            ))}
+            )}
           </div>
         </div>
         <div className="rounded-[28px] border border-black/5 bg-white p-6 shadow-sm">
           <h2 className="text-lg font-semibold text-zinc-950">Low stock alerts</h2>
           <div className="mt-6 space-y-3">
-            {['Contour Tote', 'Aero Chair'].map((item) => (
-              <div key={item} className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{item} · 4 left</div>
-            ))}
+            {lowStockProducts.length > 0 ? (
+              lowStockProducts.map((product) => (
+                <div key={product.id} className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                  {product.title} · {product.stock_quantity} left
+                </div>
+              ))
+            ) : (
+              <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                No low stock products.
+              </div>
+            )}
           </div>
         </div>
       </div>

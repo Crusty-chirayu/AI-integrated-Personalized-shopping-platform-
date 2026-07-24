@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { useCart } from "@/contexts/cart-context";
+import { useAuth } from "@/contexts/auth-context";
 
 const loadRazorpay = () =>
   new Promise<void>((resolve, reject) => {
@@ -26,8 +27,9 @@ const loadRazorpay = () =>
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { items, subtotal, clearCart } = useCart();
-  const [email, setEmail] = useState("");
+const { items, subtotal, clearCart } = useCart();
+const { user } = useAuth(); 
+ const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
   const [addressLine1, setAddressLine1] = useState("");
   const [city, setCity] = useState("");
@@ -56,10 +58,13 @@ export default function CheckoutPage() {
 
     try {
       await loadRazorpay();
-
+console.log("Authenticated user:", user);
+console.log("User ID being sent:", user?.id);
       const response = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+
+
         body: JSON.stringify({
           items: items.map((item) => ({
             product_id: item.product.id,
@@ -84,7 +89,8 @@ export default function CheckoutPage() {
             zip,
             country,
           },
-          currency: "USD",
+          user_id: user?.id,
+          currency: "INR",
         }),
       });
 

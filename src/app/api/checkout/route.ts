@@ -32,21 +32,38 @@ export async function POST(request: Request) {
   const shippingCost = 0;
   const taxAmount = Number((subtotal * 0.08).toFixed(2));
   const total = Number((subtotal + shippingCost + taxAmount).toFixed(2));
-
+console.log("========== CHECKOUT REQUEST ==========");
+console.log("Received user_id:", user_id);
+console.log("Entire body:", body);
+console.log("======================================");
   const admin = getSupabaseAdmin();
   if (!admin) {
     return NextResponse.json({ error: "Supabase admin client is not configured." }, { status: 500 });
   }
 
-  const orderNumber = `ORD-${Date.now().toString().slice(-8)}`;
 
-  try {
-    const { data: orderData, error: orderError } = await admin
-      .from("orders")
+
+
+const orderNumber = `ORD-${Date.now().toString().slice(-8)}`;
+
+try {
+
+  console.log("ORDER OBJECT TO INSERT:", {
+    order_number: orderNumber,
+    user_id,
+    email,
+  });
+
+  const { data: orderData, error: orderError } = await admin
+    .from("orders")
+
+
+
+
       .insert([
         {
           order_number: orderNumber,
-          user_id: user_id || null,
+user_id,
           email,
           shipping_address,
           billing_address,
@@ -64,9 +81,24 @@ export async function POST(request: Request) {
       .select("id")
       .single();
 
-    if (orderError || !orderData) {
-      return NextResponse.json({ error: orderError?.message || "Failed to create order record." }, { status: 500 });
-    }
+
+
+
+console.log("ORDER DATA:", orderData);
+console.log("ORDER ERROR:", orderError);
+
+if (orderError || !orderData) {
+  return NextResponse.json(
+    {
+      error: orderError?.message,
+      details: orderError,
+    },
+    { status: 500 }
+  );
+}
+
+
+
 
     const orderId = orderData.id;
     const { error: itemsError } = await admin.from("order_items").insert(
@@ -80,32 +112,91 @@ export async function POST(request: Request) {
       }))
     );
 
-    if (itemsError) {
-      return NextResponse.json({ error: itemsError.message || "Failed to create order items." }, { status: 500 });
-    }
 
-    const razorpay = new Razorpay({
-      key_id: keyId,
-      key_secret: keySecret,
-    });
 
-    const razorpayOrder = await razorpay.orders.create({
-      amount: Math.round(total * 100),
-      currency,
-      receipt: receipt || orderNumber,
-      notes: {
-        order_id: orderId,
-        customer_email: email,
-      },
-    });
 
-    await admin
-      .from("orders")
-      .update({ razorpay_order_id: razorpayOrder.id })
-      .eq("id", orderId);
 
-    return NextResponse.json({ orderId: razorpayOrder.id, amount: razorpayOrder.amount, currency: razorpayOrder.currency, internalOrderId: orderId });
-  } catch (error) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Failed to create order" }, { status: 500 });
-  }
+console.log("ITEMS ERROR:", itemsError);
+
+if (itemsError) {
+  return NextResponse.json(
+    {
+      error: itemsError.message,
+      details: itemsError,
+    },
+    { status: 500 }
+  );
+}
+
+
+
+
+console.log("Subtotal:", subtotal);
+console.log("Tax:", taxAmount);
+console.log("Total:", total);
+console.log("Amount sent to Razorpay (paise):", Math.round(total * 100));
+console.log("Creating Razorpay instance...");
+
+const razorpay = new Razorpay({
+  key_id: keyId,
+  key_secret: keySecret,
+});
+
+console.log("Creating Razorpay order...");
+
+const razorpayOrder = await razorpay.orders.create({
+  amount: Math.round(total * 100),
+  currency,
+  receipt: receipt || orderNumber,
+  notes: {
+    order_id: orderId,
+    customer_email: email,
+  },
+});
+
+console.log("Razorpay Order Created:", razorpayOrder);
+
+console.log("Updating order with Razorpay Order ID...");
+
+const { error: updateError } = await admin
+  .from("orders")
+  .update({
+    razorpay_order_id: razorpayOrder.id,
+  })
+  .eq("id", orderId);
+
+console.log("UPDATE ERROR:", updateError);
+
+if (updateError) {
+  return NextResponse.json(
+    {
+      error: updateError.message,
+      details: updateError,
+    },
+    { status: 500 }
+  );
+}
+
+console.log("Checkout completed successfully.");
+
+return NextResponse.json({
+  orderId: razorpayOrder.id,
+  amount: razorpayOrder.amount,
+  currency: razorpayOrder.currency,
+  internalOrderId: orderId,
+});
+
+} catch (error) {
+  console.error("CHECKOUT ERROR:", error);
+
+  return NextResponse.json(
+    {
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to create order",
+    },
+    { status: 500 }
+  );
+}
 }
