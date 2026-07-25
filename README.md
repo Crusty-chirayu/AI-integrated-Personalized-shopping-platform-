@@ -180,7 +180,7 @@ CartIQ's AI layer is intentionally scoped today — it's a real, working assista
 
 | Page | Path | Preview |
 |---|---|---|
-| Home | <img width="1892" height="936" alt="Screenshot 2026-07-24 212012" src="https://github.com/user-attachments/assets/9f23bffa-5bf9-4014-b580-55fff3da6fb4" /> |
+| Home |"C:\Users\Allah\Pictures\Screenshots\Screenshot 2026-07-23 091338.png" |<img width="1892" height="936" alt="Screenshot 2026-07-24 212012" src="https://github.com/user-attachments/assets/9f23bffa-5bf9-4014-b580-55fff3da6fb4" /> |
 | Products | `assets/screenshots/products.png` | `TODO` |
 | Product Details | `assets/screenshots/product-details.png` | `TODO` |
 | Cart | `assets/screenshots/cart.png` | `TODO` |
