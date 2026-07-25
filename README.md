@@ -21,7 +21,7 @@
 </div>
 
 > [!NOTE]
-> **Honesty first.** Every feature described below is backed by code that actually exists in this repository. Anywhere a claim couldn't be verified against the codebase, you'll see a clearly marked `> TODO` block instead of invented functionality. TODOS > Functiomalities maybe added later.
+> **Honesty first.** Every feature described below is backed by code that actually exists in this repository. Anywhere a claim couldn't be verified against the codebase, you'll see a clearly marked `> TODO` block instead of invented functionality.| TODOS >Functionalities maybe added later.
 
 ---
 
