@@ -653,17 +653,17 @@ https://www.contributor-covenant.org/version/2/1/code_of_conduct.html.
 Community Impact Guidelines were inspired by [Mozilla's code of conduct enforcement ladder](https://github.com/mozilla/diversity).
 ---
 
+---
 ## 📄 License
-
 MIT
 ---
 
+
 ## 👤 Authors
 
-> Chirayu Babu Jaysawal
-🌐 Portfolio: portfolio-lac-kappa-49.vercel.app
-💼 LinkedIn: linkedin.com/in/chirayu-babu-jaysawal
-💻 GitHub: @Crusty-chirayu
+**Chirayu Babu Jaysawal**
+
+🌐 [Portfolio](https://portfolio-lac-kappa-49.vercel.app) · 💼 [LinkedIn](https://linkedin.com/in/chirayu-babu-jaysawal) · 💻 [GitHub](https://github.com/Crusty-chirayu)
 
 ---
 
