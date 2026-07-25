@@ -31,6 +31,7 @@
 
 `assets/demo.gif`
 
+<img width="1148" height="562" alt="Adobe+Express+-+Recording+2026-07-25+090733" src="https://github.com/user-attachments/assets/8732b376-3e50-4cc6-b1d6-33189e9a4cbb" />
 
 
 
@@ -181,20 +182,34 @@ CartIQ's AI layer is intentionally scoped today — it's a real, working assista
 
 | Page | Path | Preview |
 |---|---|---|
-| Home |'assets/screenshots/home.png'|<img width="1892" height="936" alt="Screenshot 2026-07-24 212012" src="https://github.com/user-attachments/assets/9f23bffa-5bf9-4014-b580-55fff3da6fb4" /> |
-| Products | `assets/screenshots/products.png` | `TODO` |
-| Product Details | `assets/screenshots/product-details.png` | `TODO` |
-| Cart | `assets/screenshots/cart.png` | `TODO` |
-| Wishlist | `assets/screenshots/wishlist.png` | `TODO` |
-| Compare | `assets/screenshots/compare.png` | `TODO` — confirm a standalone compare *page* exists, or note this is chat-embedded only |
-| AI Assistant | `assets/screenshots/assistant.png` | `TODO` |
-| Orders | `assets/screenshots/orders.png` | `TODO` |
-| Account | `assets/screenshots/account.png` | `TODO` |
-| Admin Dashboard | `assets/screenshots/admin-dashboard.png` | `TODO` |
-| Admin Orders | `assets/screenshots/admin-products.png` | `TODO` |
-| Reports | `assets/screenshots/reports.png` | `TODO` |
-| Analytics | `assets/screenshots/analytics.png` | `TODO` — confirm a dedicated analytics page exists beyond the dashboard stat cards |
-| Mobile | `assets/screenshots/mobile.png` | `TODO` |
+| Home | `assets/screenshots/home.png` | <img width="1892" height="936" alt="Screenshot 2026-07-24 212012" src="https://github.com/user-attachments/assets/30f7cf78-c0aa-40f6-871f-4fa5af7315d2" />
+ |
+| Products | `assets/screenshots/products.png` | <img width="1884" height="925" alt="Screenshot 2026-07-24 212156" src="https://github.com/user-attachments/assets/b90d1be6-c7e7-4921-9b39-9f385361bdbb" />
+ |
+| Product Details | `assets/screenshots/product-details.png` | <img width="1883" height="932" alt="Screenshot 2026-07-24 212140" src="https://github.com/user-attachments/assets/1a427e9a-2494-4bcd-9093-c692f9f21f22" />
+ |
+| Cart | `assets/screenshots/cart.png` |<img width="1871" height="920" alt="Screenshot 2026-07-24 212352" src="https://github.com/user-attachments/assets/f363bba4-3de6-4801-9004-24d55e190fc9" />
+ |
+| Wishlist | `assets/screenshots/wishlist.png` |<img width="1883" height="936" alt="Screenshot 2026-07-24 212208" src="https://github.com/user-attachments/assets/0815d9b7-d325-4855-a73c-1b3736b1a89f" />
+ |
+| AI Assistant | `assets/screenshots/assistant.png` | <img width="1882" height="933" alt="Screenshot 2026-07-24 212243" src="https://github.com/user-attachments/assets/c56ec29e-8b31-4322-baee-8be93bf61ed4" />
+|
+| Orders | `assets/screenshots/orders.png` | <img width="1870" height="928" alt="image" src="https://github.com/user-attachments/assets/ed89874c-6d8e-4c9b-a09b-d1878a1f5233" />
+
+ |
+| Account | `assets/screenshots/account.png` | <img width="1884" height="925" alt="image" src="https://github.com/user-attachments/assets/8f39a6e1-e5d3-469d-9e10-4e34d9bf1ddd" />
+ |
+| Admin Dashboard | `assets/screenshots/admin-dashboard.png` | <img width="1913" height="922" alt="image" src="https://github.com/user-attachments/assets/6a3d1660-63ed-4a8c-b4e7-d2fa4acfae91" />
+ |
+| Admin Orders | `assets/screenshots/admin-products.png` | <img width="1878" height="913" alt="image" src="https://github.com/user-attachments/assets/dccfbbfe-6a64-4bc8-b3f3-a12dfffb2274" />
+|
+| Reports | `assets/screenshots/reports.png` | <img width="1886" height="925" alt="image" src="https://github.com/user-attachments/assets/c02c6f7b-d655-468b-958c-457190e9735f" /> <img width="971" height="864" alt="image" src="https://github.com/user-attachments/assets/a163e295-e256-435b-b714-a93111d9b23f" />
+
+|
+| Analytics | `assets/screenshots/analytics.png` | <img width="1914" height="918" alt="image" src="https://github.com/user-attachments/assets/8dec189d-b713-43c3-a30a-4b0b48192377" />
+ |
+| Mobile | `assets/screenshots/mobile.png` | <img width="499" height="804" alt="image" src="https://github.com/user-attachments/assets/1d7fbf4f-0513-4650-8927-8a3f00bc302a" />
+ |
 
 ---
 
