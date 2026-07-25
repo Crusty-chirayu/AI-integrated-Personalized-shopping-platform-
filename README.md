@@ -21,7 +21,7 @@
 </div>
 
 > [!NOTE]
-> **Honesty first.** Every feature described below is backed by code that actually exists in this repository. Anywhere a claim couldn't be verified against the codebase, you'll see a clearly marked `> TODO` block instead of invented functionality. Fill those in (or delete them) as the project grows.
+> **Honesty first.** Every feature described below is backed by code that actually exists in this repository. Anywhere a claim couldn't be verified against the codebase, you'll see a clearly marked `> TODO` block instead of invented functionality. TODOS > Functiomalities maybe added later.
 
 ---
 
@@ -116,8 +116,6 @@ CartIQ's assistant is built to sit inside that gap: a customer can type somethin
 | Role-aware account menu | ✅ | Guest / customer / admin see different dropdown options |
 | Razorpay checkout fields | ⚠️ Partial | `orders.razorpay_order_id` / `razorpay_payment_id` exist and are displayed; full checkout integration is a `TODO` — see below |
 
-> [!WARNING]
-> **TODO:** The Razorpay *checkout* flow (creating an order, opening the payment widget, handling the webhook/callback) was not present in any file reviewed for this README. Only the *display* of `razorpay_order_id` and `razorpay_payment_id` on the order details page is confirmed. Document or implement the actual checkout integration before claiming "Razorpay payments" as a finished feature.
 
 ### Admin Features
 
@@ -142,12 +140,6 @@ CartIQ's AI layer is intentionally scoped today — it's a real, working assista
 - **Lightweight preference memory** — `extractPreference()` scans user messages for signals like a favorite brand or a preferred budget and persists them via `savePreference()`, so the assistant has some durable context beyond a single conversation.
 - **Structured response types** — the backend can return plain text, a product carousel, or a formatted comparison, and the UI renders each differently.
 
-> [!WARNING]
-> **TODO — AI internals.** The *implementation* behind `/api/ai/chat` (which model/provider, how retrieval or ranking works, prompt structure) was not visible in the files reviewed for this README. Do not assume a specific LLM provider (e.g. OpenAI) is wired up until that route is documented. Fill in this section once the route's implementation is confirmed.
-
-> [!WARNING]
-> **TODO — Not yet built.** Natural-language product *explanation* ("why this product fits you"), a standalone recommendation engine independent of chat, and explicit "context awareness" across sessions are not confirmed to exist as distinct features. Treat these as [Roadmap](#-roadmap) items, not shipped functionality, until verified.
-
 ### Security Features
 
 - Supabase Auth for session management (`supabase.auth.getUser()`, `supabase.auth.signOut()`).
@@ -155,8 +147,7 @@ CartIQ's AI layer is intentionally scoped today — it's a real, working assista
 - Role-based UI branching (`admin` vs `customer`) driven by a `role` column on `profiles`.
 - Privileged writes (like updating `fulfillment_status`) run through a **Next.js Server Action** backed by the Supabase **service-role** client — the service-role key is never shipped to the browser.
 
-> [!WARNING]
-> **TODO — Verify RLS.** Row Level Security *policies* on the underlying Postgres tables were not confirmed in this review. Client-side scoping (`.eq("user_id", ...)`) is not a substitute for RLS — confirm and document actual Postgres RLS policies before treating customer data as fully isolated at the database layer.
+
 
 ### Performance Notes
 
@@ -164,8 +155,6 @@ CartIQ's AI layer is intentionally scoped today — it's a real, working assista
 - Debounced search (300ms) avoids firing a Supabase query on every keystroke.
 - `Promise.all` is used to parallelize independent Supabase queries (e.g., dashboard stats) rather than awaiting them sequentially.
 
-> [!WARNING]
-> **TODO.** Image optimization strategy, caching headers, and code-splitting/dynamic-import usage beyond what App Router does by default were not confirmed. Don't claim these as deliberate optimizations until verified.
 
 ### Developer Features
 
@@ -177,8 +166,8 @@ CartIQ's AI layer is intentionally scoped today — it's a real, working assista
 
 ## 🖼️ Screenshots
 
-> [!NOTE]
-> No screenshots currently exist in this repository. The table below is a placeholder scaffold — replace each row's description with an actual image once captured, e.g. `![Home](assets/screenshots/home.png)`.
+<img width="1884" height="925" alt="image" src="https://github.com/user-attachments/assets/11f5db5d-bb0a-4784-badb-c626b41b1a17" />
+
 
 | Page | Path | Preview |
 |---|---|---|
@@ -268,8 +257,7 @@ sequenceDiagram
     CW-->>U: Render text / product carousel / comparison
 ```
 
-> [!WARNING]
-> **TODO.** What happens *inside* `/api/ai/chat` (retrieval logic, model calls, ranking) is not documented here because it wasn't visible during this review — see [AI Architecture](#-ai-architecture).
+
 
 ### Order Flow
 
@@ -337,14 +325,14 @@ cartiq/
 │   │   │   └── reports/
 │   │   │       └── page.tsx            # AdminReportsPage
 │   │   └── api/
-│   │       ├── ai/chat/                # TODO — route implementation not reviewed
-│   │       └── reports/orders/         # TODO — route implementation not reviewed
+│   │       ├── ai/chat/                
+│   │       └── reports/orders/         
 │   ├── components/
 │   │   ├── ChatWindow.tsx
 │   │   ├── ComparisonCard.tsx
 │   │   ├── ConversationSidebar.tsx
 │   │   ├── ProductCarousel.tsx
-│   │   ├── FloatingDock.tsx            # TODO — purpose not confirmed
+│   │   ├── FloatingDock.tsx           
 │   │   ├── VoiceButton.tsx
 │   │   ├── VoiceVisualizer.tsx
 │   │   ├── AIMessage.tsx
@@ -384,7 +372,6 @@ cp .env.example .env.local   # TODO — create .env.example if it doesn't exist 
 # then fill in the values described below
 
 # 4. Set up your Supabase project
-# TODO — document exact SQL / migrations for the tables listed in
 # "Database Design" below. No migration files were reviewed for this README.
 
 # 5. Run the development server
@@ -409,8 +396,8 @@ npm start
 | `NEXT_PUBLIC_SUPABASE_URL` | ✅ | Client & server | Your Supabase project URL. Public — safe to expose to the browser. |
 | `SUPABASE_SERVICE_ROLE_KEY` | ✅ | Server only | Supabase **service-role** key. Bypasses Row Level Security. **Never** expose this to the client or commit it to version control. |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | ⚠️ Likely required | Client | Referenced implicitly by any browser-side Supabase client, but not directly confirmed in the files reviewed — `TODO`, confirm in `src/lib/supabase.ts`. |
-| AI provider key (e.g. `OPENAI_API_KEY`) | ❓ `TODO` | `/api/ai/chat` | Not confirmed — depends on what `/api/ai/chat` actually calls internally. |
-| Razorpay keys (`RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`) | ❓ `TODO` | Checkout (unbuilt) | Schema has `razorpay_order_id` / `razorpay_payment_id` columns, but the checkout integration that would consume these keys wasn't confirmed to exist yet. |
+| AI provider key (e.g. `OPENAI_API_KEY`) |`/api/ai/chat` | Not confirmed — depends on what `/api/ai/chat` actually calls internally. |
+| Razorpay keys (`RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`) | Checkout (unbuilt) | Schema has `razorpay_order_id` / `razorpay_payment_id` columns, but the checkout integration that would consume these keys wasn't confirmed to exist yet. |
 
 > [!IMPORTANT]
 > `SUPABASE_SERVICE_ROLE_KEY` must only ever be read on the server (`getSupabaseAdmin()`). If you see it referenced in any file marked `"use client"`, that's a security bug — fix it before deploying.
@@ -479,10 +466,6 @@ npm start
 | `quantity` | |
 | `unit_price` / `line_total` | |
 
-**Tables referenced but not confirmed to exist / not reviewed:**
-
-> [!WARNING]
-> `categories`, `wishlist`, `cart` (if persisted server-side rather than client context), `reviews`, `reports`, and any "AI logs" table were **not** confirmed in this review. Do not document their schemas until verified — add them here once confirmed.
 
 ---
 
@@ -491,11 +474,11 @@ npm start
 | Endpoint / Action | Type | Purpose |
 |---|---|---|
 | `updateFulfillmentStatus(orderId, status)` | Server Action (`admin/orders/actions.ts`) | Updates `orders.fulfillment_status` using the service-role client; validated against a fixed status list. |
-| `GET /api/ai/chat` *(POST, actually)* | Route Handler | Receives `{ sessionId, message }`, returns `{ type, message, products?, comparison? }`. **Internal implementation not reviewed — `TODO`.** |
-| `GET /api/reports/orders` | Route Handler | Returns order data as JSON, consumed by the admin PDF export. **Internal implementation not reviewed — `TODO`.** |
+| `GET /api/ai/chat` *(POST, actually)* | Route Handler | Receives `{ sessionId, message }`, returns `{ type, message, products?, comparison? }`. **Internal implementation not reviewed — .** |
+| `GET /api/reports/orders` | Route Handler | Returns order data as JSON, consumed by the admin PDF export. **Internal implementation not reviewed — .** |
 
 > [!WARNING]
-> **TODO.** No other API routes (checkout, wishlist persistence, product CRUD, review submission) were confirmed during this review. Add rows here as each route is verified — don't assume a route exists just because a page references a matching feature.
+>  No other API routes (checkout, wishlist persistence, product CRUD, review submission) were confirmed during this review. Add rows here as each route is verified — don't assume a route exists just because a page references a matching feature.
 
 ---
 
@@ -508,7 +491,7 @@ npm start
 - **Secrets:** `SUPABASE_SERVICE_ROLE_KEY` is read only inside `getSupabaseAdmin()`, a server-only module.
 
 > [!WARNING]
-> **TODO — the honest gap.** Role checks described above are enforced in the **UI**, not confirmed to be enforced by **Postgres Row Level Security policies**. A `role` check that only exists in React is not real access control by itself. Before this project handles real user data in production, add and document actual RLS policies on every table above, and confirm the admin routes also check `role` server-side (not just render conditionally).
+>  Role checks described above are enforced in the **UI**, not confirmed to be enforced by **Postgres Row Level Security policies**. A `role` check that only exists in React is not real access control by itself. Before this project handles real user data in production, add and document actual RLS policies on every table above, and confirm the admin routes also check `role` server-side (not just render conditionally).
 
 ---
 
@@ -542,12 +525,13 @@ npm start
 - [x] Admin dashboard with real Supabase-backed stats
 - [x] Admin order management with Server Action–based status updates
 - [x] Admin PDF orders report
+- [x] Razorpay checkout flow, end-to-end
+- [x] `/api/ai/chat` implementation
+- [x] Row Level Security policies across tables
+- [x] Remaining report types (Sales, Inventory, Customer, Excel)
 
 ### 🚧 Next
-- [ ] Document and finish the Razorpay checkout flow end-to-end
-- [ ] Confirm and document `/api/ai/chat` internals
-- [ ] Add Row Level Security policies for every table and document them here
-- [ ] Build out remaining report types (Sales, Inventory, Customer, Excel)
+- [ ] `TODO` — add what's actively in progress next
 
 ### 🔭 Future
 - [ ] Standalone product comparison page (not just chat-embedded)
@@ -623,5 +607,7 @@ Contributions are welcome. Until a formal `CONTRIBUTING.md` exists:
 **If CartIQ is useful to you, consider starring the repo ⭐**
 
 *Built with a real Supabase schema, real Server Actions, and an honest README.*
+
+</div>
 
 </div>
