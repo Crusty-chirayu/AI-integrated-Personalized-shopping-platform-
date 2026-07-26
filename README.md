@@ -687,3 +687,5 @@ MIT
 </div>
 
 </div>
+
+Deployed site preview : https://ai-integrated-personalized-shopping.vercel.app/
