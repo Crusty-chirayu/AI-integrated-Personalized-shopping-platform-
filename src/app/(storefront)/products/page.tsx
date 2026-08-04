@@ -1,9 +1,49 @@
+import Link from "next/link";
 import { ProductCard } from "@/components/product-card";
 import { getProducts } from "@/lib/supabase-data";
-import { PackageSearch, Sparkles } from "lucide-react";
+import { ArrowLeft, PackageSearch, Sparkles } from "lucide-react";
 
-export default async function ProductsPage() {
-  const products = await getProducts();
+const CATEGORY_EMOJI: Record<string, string> = {
+  electronics: "💻",
+  fashion: "👗",
+  grocery: "🛒",
+  home: "🛋️",
+  sports: "🏋️",
+};
+
+function toTitleCase(value: string) {
+  return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+}
+
+export default async function ProductsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ category?: string }>;
+}) {
+  const { category } = await searchParams;
+
+  const allProducts = await getProducts();
+
+  const normalizedCategory = category?.trim().toLowerCase();
+
+  const products = normalizedCategory
+    ? allProducts.filter(
+        (product) =>
+          product.category?.toLowerCase() === normalizedCategory
+      )
+    : allProducts;
+
+  const categoryLabel = normalizedCategory
+    ? toTitleCase(normalizedCategory)
+    : null;
+
+  const heading = categoryLabel
+    ? `${categoryLabel} Collection`
+    : "Curated pieces for modern living.";
+
+  const subtitle = categoryLabel
+    ? `Discover the latest ${categoryLabel} products powered by AI recommendations.`
+    : "Discover thousands of products powered by AI recommendations.";
 
   return (
     <div>
@@ -24,12 +64,27 @@ export default async function ProductsPage() {
                 🛍 Products
               </div>
 
+              {categoryLabel && (
+                <Link
+                  href="/products"
+                  className="mt-4 inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-4 py-1.5 text-xs font-medium text-zinc-600 shadow-sm transition hover:border-indigo-200 hover:text-indigo-700"
+                >
+                  <ArrowLeft className="h-3.5 w-3.5" />
+                  Back to All Products
+                  <span className="mx-1 h-1 w-1 rounded-full bg-zinc-300" />
+                  <span className="inline-flex items-center gap-1 text-zinc-950">
+                    {CATEGORY_EMOJI[normalizedCategory ?? ""] ?? "🛒"}
+                    {categoryLabel}
+                  </span>
+                </Link>
+              )}
+
               <h1 className="mt-5 text-4xl font-semibold tracking-[-0.02em] text-zinc-950 sm:text-5xl">
-                Curated pieces for modern living.
+                {heading}
               </h1>
 
               <p className="mt-4 max-w-xl text-base leading-7 text-zinc-600">
-                Discover thousands of products powered by AI recommendations.
+                {subtitle}
               </p>
             </div>
 
@@ -58,7 +113,9 @@ export default async function ProductsPage() {
             </div>
             <h2 className="mt-6 text-xl font-semibold text-zinc-950">No products found</h2>
             <p className="mt-2 max-w-sm text-sm leading-6 text-zinc-500">
-              Try another search or check back soon — new products are added regularly.
+              {categoryLabel
+                ? `No products in ${categoryLabel} yet — check back soon.`
+                : "Try another search or check back soon — new products are added regularly."}
             </p>
           </div>
         ) : (

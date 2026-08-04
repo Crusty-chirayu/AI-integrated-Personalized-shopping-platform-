@@ -28,8 +28,11 @@ export default async function AdminSeoPage() {
           </div>
           <div>
             <label className="text-sm font-medium text-zinc-700">Tagline</label>
-            <input className="mt-2 h-12 w-full rounded-full border border-black/10 bg-[#f7f3eb] px-4 outline-none" defaultValue={data?.tagline ?? "Elevated essentials for modern living."} />
-          </div>
+            <input className="mt-2 h-12 w-full rounded-full border border-black/10 bg-[#f7f3eb] px-4 outline-none"  />
+          </div>defaultValue={
+  data?.tagline ??
+  "AI-Powered Smart Shopping Platform for Personalized Product Discovery."
+}
         </div>
       </div>
     </div>

@@ -209,9 +209,16 @@ searchText: message,
 
   if (
     text.includes("recommend") ||
-    text.includes("suggest")
+    text.includes("suggest") ||
+    text.includes("best") ||
+    text.includes("top") ||
+    text.includes("cheapest") ||
+    text.includes("budget") ||
+    text.includes("under") ||
+    text.includes("below") ||
+    text.includes("price") ||
+    text.includes("available")
   ) {
-
     return {
       type: "recommendation",
       brand,
@@ -220,45 +227,76 @@ searchText: message,
       searchText: message,
       raw: message,
     };
-
   }
 
   const shoppingTriggers = [
-  "want",
-  "need",
-  "show",
-  "find",
-  "search",
-  "looking",
-  "buy",
-  "get",
-  "purchase",
-];
+    "want",
+    "need",
+    "show",
+    "find",
+    "search",
+    "looking",
+    "buy",
+    "get",
+    "purchase",
+    "deal",
+    "offer",
+    "offer",
+    "under",
+    "budget",
+    "discount",
+    "price",
+    "cheap",
+    "good",
+    "best",
+    "top",
+  ];
 
-const hasShoppingTrigger = shoppingTriggers.some(word =>
-  text.includes(word)
-);
+  const hasShoppingTrigger = shoppingTriggers.some((word) =>
+    text.includes(word)
+  );
 
-if (
-  hasShoppingTrigger &&
-  (brand || category)
-) {
-  return {
-    type: "product_search",
-    brand,
-    category,
-    budget,
-    searchText: message,
-    raw: message,
-  };
-}
+  const productTerms = [
+    ...brands,
+    ...categories,
+    "phone",
+    "mobile",
+    "tablet",
+    "tv",
+    "television",
+    "laptop",
+    "shoes",
+    "watch",
+    "headphones",
+    "earbuds",
+    "speaker",
+    "camera",
+    "gaming",
+    "furniture",
+    "sofa",
+    "jacket",
+    "bag",
+    "backpack",
+    "desk",
+    "mattress",
+    "dining",
+    "chair",
+    "home",
+    "kitchen",
+    "grocery",
+    "sports",
+    "fitness",
+    "fashion",
+  ];
+
+  const hasProductTerm = productTerms.some((term) =>
+    text.includes(term)
+  );
 
   if (
-    brand ||
-    category ||
-    budget
+    hasShoppingTrigger &&
+    (brand || category || budget || hasProductTerm)
   ) {
-
     return {
       type: "product_search",
       brand,
@@ -267,7 +305,17 @@ if (
       searchText: message,
       raw: message,
     };
+  }
 
+  if (brand || category || budget || hasProductTerm) {
+    return {
+      type: "product_search",
+      brand,
+      category,
+      budget,
+      searchText: message,
+      raw: message,
+    };
   }
 
   if (

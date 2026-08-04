@@ -39,7 +39,21 @@ const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const orderTotal = useMemo(() => subtotal + 12, [subtotal]);
+const GST_RATE = 0.18;
+
+const shipping = 0;
+
+const gst = useMemo(
+  () => subtotal * GST_RATE,
+  [subtotal]
+);
+
+const orderTotal = useMemo(
+  () => subtotal + gst + shipping,
+  [subtotal, gst, shipping]
+);
+
+
 
   const handleCheckout = async () => {
     setError(null);
@@ -172,22 +186,72 @@ console.log("User ID being sent:", user?.id);
           </div>
         </div>
         <div className="rounded-[32px] border border-black/5 bg-[#f5f2ea] p-8 shadow-sm">
+
           <p className="text-sm uppercase tracking-[0.2em] text-zinc-500">Order summary</p>
-          <div className="mt-6 space-y-4 text-sm text-zinc-600">
-            {items.map((item) => (
-              <div key={item.product.id} className="flex justify-between">
-                <span>{item.product.title} × {item.quantity}</span>
-                <span>${((item.product.salePrice ?? item.product.price) * item.quantity).toFixed(2)}</span>
-              </div>
-            ))}
-            <div className="flex justify-between border-t border-black/10 pt-4">
-              <span>Subtotal</span>
-              <span>${subtotal.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between"><span>Shipping</span><span>Free</span></div>
-            <div className="flex justify-between"><span>Tax</span><span>$12.00</span></div>
-            <div className="mt-4 flex justify-between text-lg font-semibold text-zinc-950"><span>Total</span><span>${orderTotal.toFixed(2)}</span></div>
-          </div>
+
+
+
+<div className="mt-6 space-y-4 text-sm text-zinc-600">
+
+  {items.map((item) => (
+    <div
+      key={item.product.id}
+      className="flex justify-between"
+    >
+      <span>
+        {item.product.title} × {item.quantity}
+      </span>
+
+      <span>
+        ₹
+        {(
+          (item.product.salePrice ?? item.product.price) *
+          item.quantity
+        ).toLocaleString("en-IN")}
+      </span>
+    </div>
+  ))}
+
+  <div className="flex justify-between border-t border-black/10 pt-4">
+    <span>Subtotal</span>
+
+    <span>
+      ₹{subtotal.toLocaleString("en-IN")}
+    </span>
+  </div>
+
+  <div className="flex justify-between">
+    <span>Shipping</span>
+
+    <span className="font-medium text-green-600">
+      FREE
+    </span>
+  </div>
+
+  <div className="flex justify-between">
+    <span>GST (18%)</span>
+
+    <span>
+      ₹{gst.toLocaleString("en-IN")}
+    </span>
+  </div>
+
+  <div className="mt-4 flex justify-between border-t border-black/10 pt-4 text-lg font-semibold text-zinc-950">
+    <span>Total</span>
+
+    <span>
+      ₹{orderTotal.toLocaleString("en-IN")}
+    </span>
+  </div>
+
+  <p className="text-xs text-zinc-500">
+    Total includes all applicable taxes.
+  </p>
+
+</div>
+
+
+
           <button onClick={handleCheckout} disabled={isLoading} className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-full bg-zinc-950 px-6 py-3.5 text-sm font-medium text-white disabled:cursor-not-allowed disabled:bg-zinc-600">
             {isLoading ? "Processing order..." : "Place order"}
             <ArrowRight className="h-4 w-4" />

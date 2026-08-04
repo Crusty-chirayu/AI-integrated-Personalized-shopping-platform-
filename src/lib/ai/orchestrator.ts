@@ -96,34 +96,30 @@ if (
   switch (route.type) {
 
     case "product_search":
-    case "recommendation":
+    case "recommendation": {
+      const productRoute = route as {
+        type: "product_search" | "recommendation";
+        intent: any;
+        products: any[];
+        context?: string;
+      };
 
-updateConversation(sessionId, {
-
-  lastProducts: route.products,
-
-  lastCategory:
-    route.intent?.category,
-
-  lastBrand:
-    route.intent?.brand,
-
-  lastBudget:
-    route.intent?.budget,
-
-  lastIntent:
-    route.type,
-
-  lastTopic:
-    route.intent?.category ??
-    route.intent?.brand,
-
-});
+      updateConversation(sessionId, {
+        lastProducts: productRoute.products,
+        lastCategory: productRoute.intent?.category,
+        lastBrand: productRoute.intent?.brand,
+        lastBudget: productRoute.intent?.budget,
+        lastIntent: productRoute.type,
+        lastTopic:
+          productRoute.intent?.category ??
+          productRoute.intent?.brand,
+      });
 
       return await handleProductSearch(
         message,
-        route
+        productRoute
       );
+    }
 
     case "general_chat":
 

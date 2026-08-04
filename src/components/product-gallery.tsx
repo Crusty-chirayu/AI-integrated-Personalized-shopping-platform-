@@ -51,15 +51,15 @@ export default function ProductGallery({
 
     {/* Main Image */}
 
-    <div className="order-1 overflow-hidden rounded-[30px] border border-black/5 bg-white p-3 shadow-sm lg:order-2">
+<div className="order-1 h-full overflow-hidden rounded-[30px] border border-black/5 bg-white p-3 shadow-sm lg:order-2">
 
-      <img
-        src={selectedImage}
-        alt="Product"
-        className="h-[620px] w-full rounded-[24px] object-cover transition-all duration-300"
-      />
+  <img
+    src={selectedImage}
+    alt="Product"
+    className="h-full min-h-[620px] w-full rounded-[24px] object-cover transition-all duration-300"
+  />
 
-    </div>
+</div>
 
   </div>
 );

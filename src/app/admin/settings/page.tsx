@@ -29,15 +29,21 @@ export default async function AdminSettingsPage() {
           </div>
           <div>
             <label className="text-sm font-medium text-zinc-700">Currency</label>
-            <input className="mt-2 h-12 w-full rounded-full border border-black/10 bg-[#f7f3eb] px-4 outline-none" defaultValue={data?.currency_code ?? "USD"} />
+            <input className="mt-2 h-12 w-full rounded-full border border-black/10 bg-[#f7f3eb] px-4 outline-none" defaultValue={data?.currency_code ?? "INR (₹)"} />
           </div>
           <div>
             <label className="text-sm font-medium text-zinc-700">Tagline</label>
-            <input className="mt-2 h-12 w-full rounded-full border border-black/10 bg-[#f7f3eb] px-4 outline-none" defaultValue={data?.tagline ?? "Elevated essentials for modern living."} />
+            <input className="mt-2 h-12 w-full rounded-full border border-black/10 bg-[#f7f3eb] px-4 outline-none" defaultValue={
+  data?.tagline ??
+  "AI-Powered Smart Shopping Platform for Personalized Product Discovery."
+} />
           </div>
           <div>
             <label className="text-sm font-medium text-zinc-700">Contact email</label>
-            <input className="mt-2 h-12 w-full rounded-full border border-black/10 bg-[#f7f3eb] px-4 outline-none" defaultValue={data?.contact_email ?? "support@cartiq.example"} />
+            <input className="mt-2 h-12 w-full rounded-full border border-black/10 bg-[#f7f3eb] px-4 outline-none" defaultValue={
+  data?.contact_email ??
+  "chirayujaysawal7@gmail.com"
+} />
           </div>
         </div>
       </div>

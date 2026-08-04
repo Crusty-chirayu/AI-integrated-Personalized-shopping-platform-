@@ -23,14 +23,72 @@ import Message from "./Message";
 import { getCurrentUser } from "@/lib/auth";
 import TypingIndicator from "./TypingIndicator";
 
+type AssistantProduct = {
+  id: string;
+  title: string;
+  slug: string;
+  price: number;
+  sale_price?: number;
+  salePrice?: number;
+  description?: string;
+  product_images?: Array<{ image_url: string }>;
+  badge?: string;
+  tags?: string[];
+  reason?: string;
+  confidence?: number;
+  rating?: number;
+};
+
 type ChatMessage = {
   id: string;
   streaming?: boolean;
   role: "user" | "assistant";
-  type: "text" | "products" | "comparison" | "order";
-  content: any;
-  products?: any[];
-  comparison?: any[];
+  type: "text" | "chat" | "products" | "comparison" | "order";
+  content: string;
+  products?: AssistantProduct[];
+  comparison?: AssistantProduct[];
+};
+
+type Conversation = {
+  id: string;
+  title: string;
+};
+
+interface SpeechRecognition {
+  lang: string;
+  interimResults: boolean;
+  maxAlternatives: number;
+  onstart: (() => void) | null;
+  onspeechstart: (() => void) | null;
+  onspeechend: (() => void) | null;
+  onresult: ((event: SpeechRecognitionEvent) => void) | null;
+  onerror: ((event: SpeechRecognitionErrorEvent) => void) | null;
+  onend: (() => void) | null;
+  onaudiostart: (() => void) | null;
+  onaudioend: (() => void) | null;
+  onsoundstart: (() => void) | null;
+  onsoundend: (() => void) | null;
+  start: () => void;
+  stop: () => void;
+}
+
+interface SpeechRecognitionResult {
+  transcript: string;
+}
+
+interface SpeechRecognitionEvent {
+  results: ArrayLike<ArrayLike<SpeechRecognitionResult>>;
+}
+
+interface SpeechRecognitionErrorEvent {
+  error: string;
+}
+
+type SpeechRecognitionConstructor = new () => SpeechRecognition;
+
+type WindowWithSpeechRecognition = Window & {
+  webkitSpeechRecognition?: SpeechRecognitionConstructor;
+  SpeechRecognition?: SpeechRecognitionConstructor;
 };
 
 export default function ChatWindow() {
@@ -47,18 +105,26 @@ export default function ChatWindow() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [listening, setListening] = useState(false);
-  const [conversations, setConversations] = useState<any[]>([]);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selectedConversation, setSelectedConversation] = useState<
     string | null
   >(null);
 
   const sessionId = useRef(crypto.randomUUID());
   const conversationId = useRef<string | null>(null);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
+
+  useEffect(() => {
+    return () => {
+      recognitionRef.current?.stop?.();
+      recognitionRef.current = null;
+    };
+  }, []);
 
   useEffect(() => {
     async function loadConversation() {
@@ -75,7 +141,7 @@ export default function ChatWindow() {
       if (!user) return;
 
       const allConversations = await getConversations(user.id);
-      setConversations(allConversations);
+      setConversations(allConversations as Conversation[]);
 
       const conversation = await getLatestConversation(user.id);
       if (!conversation) return;
@@ -83,68 +149,142 @@ export default function ChatWindow() {
       conversationId.current = conversation.id;
       setSelectedConversation(conversation.id);
 
-      const history = await getMessages(conversation.id);
+        const history = await getMessages(conversation.id);
 
       setMessages(
-        history.map((msg: any) => ({
-          id: msg.id,
-          role: msg.role,
-          type: msg.type ?? "text",
-          content: msg.content,
-          products: msg.metadata?.products ?? [],
-          comparison: msg.metadata?.comparison ?? [],
-          streaming: false,
-        }))
+        history.map(
+          (msg: {
+            id: string;
+            role: "user" | "assistant";
+            type?: string;
+            content: string;
+            metadata?: {
+              products?: unknown[];
+              comparison?: unknown[];
+            };
+          }) => {
+            const messageType = msg.type as ChatMessage["type"] | undefined;
+            const type =
+              messageType === "products" ||
+              messageType === "comparison" ||
+              messageType === "order"
+                ? messageType
+                : "text";
+
+            const products = Array.isArray(msg.metadata?.products)
+              ? (msg.metadata.products as AssistantProduct[])
+              : undefined;
+            const comparison = Array.isArray(msg.metadata?.comparison)
+              ? (msg.metadata.comparison as AssistantProduct[])
+              : undefined;
+
+            return {
+              id: msg.id,
+              role: msg.role,
+              type,
+              content: msg.content,
+              products,
+              comparison,
+              streaming: false,
+            };
+          }
+        )
       );
     }
 
     loadConversation();
   }, []);
 
-  function startListening() {
+  async function startListening() {
+    if (listening) {
+      recognitionRef.current?.stop?.();
+      recognitionRef.current = null;
+      setListening(false);
+      return;
+    }
+
+    const win = window as WindowWithSpeechRecognition;
     const SpeechRecognition =
-      (window as any).SpeechRecognition ||
-      (window as any).webkitSpeechRecognition;
+      win.SpeechRecognition || win.webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
       alert("Speech Recognition isn't supported in this browser.");
       return;
     }
 
+    try {
+      if (navigator.mediaDevices?.getUserMedia) {
+        await navigator.mediaDevices.getUserMedia({ audio: true });
+      }
+    } catch (error) {
+      console.error("Microphone permission denied:", error);
+      alert("Please allow microphone access to use voice input.");
+      return;
+    }
+
     const recognition = new SpeechRecognition();
+    recognitionRef.current = recognition;
+
     recognition.lang = "en-US";
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
 
-    setListening(true);
-    recognition.start();
-
-    recognition.onresult = async (event: any) => {
-      const transcript = event.results[0][0].transcript;
-      setInput(transcript);
-      setListening(false);
-
-      // Give React time to update the input
-      setTimeout(async () => {
-        const user = await getCurrentUser();
-        if (!user) return;
-
-        if (!conversationId.current) {
-          const conversation = await createConversation(user.id);
-          conversationId.current = conversation.id;
-        }
-
-        await sendVoiceMessage(transcript);
-      }, 100);
+    recognition.onstart = () => {
+      setListening(true);
     };
 
-    recognition.onerror = () => {
+    recognition.onspeechstart = () => {
+      console.log("Speech detected");
+    };
+
+    recognition.onspeechend = () => {
+      console.log("Speech ended");
+    };
+
+    recognition.onresult = async (event: SpeechRecognitionEvent) => {
+      const transcript =
+        event.results?.[0]?.[0]?.transcript?.trim() ?? "";
+
+      if (!transcript) {
+        setListening(false);
+        return;
+      }
+
+      setInput(transcript);
       setListening(false);
+      recognitionRef.current = null;
+      await sendVoiceMessage(transcript);
+    };
+
+    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+      console.error("Recognition Error:", event.error);
+      alert(event.error || "Voice recognition failed.");
+      setListening(false);
+      recognitionRef.current = null;
     };
 
     recognition.onend = () => {
       setListening(false);
+      recognitionRef.current = null;
     };
+
+    recognition.onaudiostart = () => {
+      console.log("Audio started");
+    };
+
+    recognition.onaudioend = () => {
+      console.log("Audio ended");
+    };
+
+    recognition.onsoundstart = () => {
+      console.log("Sound started");
+    };
+
+    recognition.onsoundend = () => {
+      console.log("Sound ended");
+    };
+
+    recognition.start();
   }
 
   async function sendVoiceMessage(transcript: string) {
@@ -332,15 +472,43 @@ export default function ChatWindow() {
           const history = await getMessages(id);
 
           setMessages(
-            history.map((msg: any) => ({
-              id: msg.id,
-              role: msg.role,
-              type: msg.type ?? "text",
-              content: msg.content,
-              products: msg.metadata?.products ?? [],
-              comparison: msg.metadata?.comparison ?? [],
-              streaming: false,
-            }))
+            history.map(
+              (msg: {
+                id: string;
+                role: "user" | "assistant";
+                type?: string;
+                content: string;
+                metadata?: {
+                  products?: unknown[];
+                  comparison?: unknown[];
+                };
+              }) => {
+                const messageType = msg.type as ChatMessage["type"] | undefined;
+                const type =
+                  messageType === "products" ||
+                  messageType === "comparison" ||
+                  messageType === "order"
+                    ? messageType
+                    : "text";
+
+                const products = Array.isArray(msg.metadata?.products)
+                  ? (msg.metadata.products as AssistantProduct[])
+                  : undefined;
+                const comparison = Array.isArray(msg.metadata?.comparison)
+                  ? (msg.metadata.comparison as AssistantProduct[])
+                  : undefined;
+
+                return {
+                  id: msg.id,
+                  role: msg.role,
+                  type,
+                  content: msg.content,
+                  products,
+                  comparison,
+                  streaming: false,
+                };
+              }
+            )
           );
         }}
         onNewChat={() => {
@@ -401,8 +569,8 @@ export default function ChatWindow() {
                 <div className="whitespace-pre-wrap">{message.content}</div>
               )}
 
-              {message.type === "products" && (
-                <ProductCarousel products={message.products ?? []} />
+              {message.products && message.products.length > 0 && (
+                <ProductCarousel products={message.products} />
               )}
 
               {message.type === "comparison" &&

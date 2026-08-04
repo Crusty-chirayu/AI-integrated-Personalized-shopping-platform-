@@ -39,6 +39,27 @@ const links = [
   { href: "/contact", label: "Contact", icon: Mail },
 ];
 
+const footerQuickLinks = [
+  { href: "/", label: "Home" },
+  { href: "/products", label: "Products" },
+  { href: "/categories", label: "Categories" },
+  { href: "/assistant", label: "AI Assistant" },
+  { href: "/wishlist", label: "Wishlist" },
+  { href: "/cart", label: "Cart" },
+];
+
+const footerSupportLinks = [
+  { href:"/help-centre", label: "Help Center" },
+  { href: "/contact", label: "Contact" },
+  { href: "/faq", label: "FAQ" },
+  { href: "/privacy", label: "Privacy Policy" },
+  { href: "/terms", label: "Terms" },
+];
+
+const CONTACT_EMAIL = "chirayujaysawal7@gmail.com";
+const GITHUB_URL = "https://github.com/Crusty-chirayu";
+const LINKEDIN_URL = "https://www.linkedin.com/in/chirayu-jayaswal";
+
 type ProfileRole = "admin" | "customer" | null;
 
 export function StorefrontShell({
@@ -475,6 +496,7 @@ export function StorefrontShell({
         )}
       </AnimatePresence>
 
+      {/* ================= FOOTER ================= */}
       <footer className="relative overflow-hidden border-t border-black/5 bg-white">
         <div
           className="pointer-events-none absolute inset-0"
@@ -484,53 +506,65 @@ export function StorefrontShell({
           }}
         />
 
-        <div className="relative mx-auto max-w-7xl px-6 py-16 lg:px-10">
-          <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="relative mx-auto max-w-7xl px-6 py-16 sm:py-20 lg:px-10">
+          <div className="grid gap-12 sm:grid-cols-2 sm:gap-10 lg:grid-cols-4 lg:gap-8">
             {/* Brand */}
-            <div>
-              <div className="flex items-center gap-2.5">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-teal-500 text-white">
+            <div className="sm:col-span-2 lg:col-span-1">
+              <Link href="/" className="inline-flex items-center gap-2.5">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-teal-500 text-white shadow-sm">
                   <Sparkles className="h-4 w-4" />
                 </div>
-                <span className="text-base font-bold text-zinc-950">CartIQ</span>
-              </div>
+                <span className="text-base font-bold tracking-tight text-zinc-950">
+                  CartIQ
+                </span>
+              </Link>
 
               <p className="mt-4 max-w-xs text-sm leading-7 text-zinc-600">
-                Smart AI-powered shopping platform with personalized
-                recommendations and intelligent product discovery.
+                CartIQ is an AI-powered shopping assistant that helps
+                customers discover the right products through personalized
+                recommendations, intelligent search and conversational AI.
               </p>
             </div>
 
             {/* Quick Links */}
-            <div>
+            <nav aria-label="Quick links">
               <p className="text-xs font-semibold uppercase tracking-[0.15em] text-zinc-900">
                 Quick Links
               </p>
 
-              <div className="mt-5 flex flex-col gap-3 text-sm text-zinc-600">
-                <Link href="/" className="transition hover:text-indigo-600">Home</Link>
-                <Link href="/products" className="transition hover:text-indigo-600">Products</Link>
-                <Link href="/categories" className="transition hover:text-indigo-600">Categories</Link>
-                <Link href="/assistant" className="transition hover:text-indigo-600">AI Assistant</Link>
-                <Link href="/wishlist" className="transition hover:text-indigo-600">Wishlist</Link>
-                <Link href="/cart" className="transition hover:text-indigo-600">Cart</Link>
-              </div>
-            </div>
+              <ul className="mt-5 flex flex-col gap-3.5 text-sm text-zinc-600">
+                {footerQuickLinks.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="inline-block rounded-sm transition-colors duration-200 hover:text-indigo-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
 
             {/* Support */}
-            <div>
+            <nav aria-label="Support links">
               <p className="text-xs font-semibold uppercase tracking-[0.15em] text-zinc-900">
                 Support
               </p>
 
-              <div className="mt-5 flex flex-col gap-3 text-sm text-zinc-600">
-                <Link href="/help" className="transition hover:text-indigo-600">Help Center</Link>
-                <Link href="/contact" className="transition hover:text-indigo-600">Contact</Link>
-                <Link href="/faq" className="transition hover:text-indigo-600">FAQ</Link>
-                <Link href="/privacy" className="transition hover:text-indigo-600">Privacy Policy</Link>
-                <Link href="/terms" className="transition hover:text-indigo-600">Terms</Link>
-              </div>
-            </div>
+              <ul className="mt-5 flex flex-col gap-3.5 text-sm text-zinc-600">
+                {footerSupportLinks.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="inline-block rounded-sm transition-colors duration-200 hover:text-indigo-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
 
             {/* Connect */}
             <div>
@@ -540,41 +574,50 @@ export function StorefrontShell({
 
               <div className="mt-5 flex items-center gap-3">
                 <a
-                  href="https://github.com"
+                  href={GITHUB_URL}
                   target="_blank"
-                  rel="noreferrer"
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-black/10 text-zinc-600 transition hover:-translate-y-0.5 hover:border-indigo-200 hover:text-indigo-600 hover:shadow-md"
+                  rel="noopener noreferrer"
+                  aria-label="CartIQ on GitHub (opens in a new tab)"
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-black/10 text-zinc-600 transition duration-200 hover:-translate-y-0.5 hover:border-indigo-200 hover:text-indigo-600 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2"
                 >
                   <Github className="h-4 w-4" />
                 </a>
                 <a
-                  href="https://linkedin.com"
+                  href={LINKEDIN_URL}
                   target="_blank"
-                  rel="noreferrer"
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-black/10 text-zinc-600 transition hover:-translate-y-0.5 hover:border-indigo-200 hover:text-indigo-600 hover:shadow-md"
+                  rel="noopener noreferrer"
+                  aria-label="CartIQ on LinkedIn (opens in a new tab)"
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-black/10 text-zinc-600 transition duration-200 hover:-translate-y-0.5 hover:border-indigo-200 hover:text-indigo-600 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2"
                 >
                   <Linkedin className="h-4 w-4" />
                 </a>
                 <a
-                  href="mailto:hello@cartiq.app"
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-black/10 text-zinc-600 transition hover:-translate-y-0.5 hover:border-indigo-200 hover:text-indigo-600 hover:shadow-md"
+                  href={`mailto:${CONTACT_EMAIL}`}
+                  aria-label={`Email CartIQ at ${CONTACT_EMAIL}`}
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-black/10 text-zinc-600 transition duration-200 hover:-translate-y-0.5 hover:border-indigo-200 hover:text-indigo-600 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2"
                 >
                   <Mail className="h-4 w-4" />
                 </a>
               </div>
 
-              <p className="mt-4 text-sm text-zinc-500">hello@cartiq.app</p>
+              <a
+                href={`mailto:${CONTACT_EMAIL}`}
+                className="mt-4 inline-block break-all text-sm text-zinc-500 transition-colors duration-200 hover:text-indigo-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2"
+              >
+                {CONTACT_EMAIL}
+              </a>
             </div>
           </div>
 
-          <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-black/5 pt-8 sm:flex-row">
-            <p className="text-sm text-zinc-500">
-              © 2026 CartIQ. All rights reserved.
+          <div className="mt-14 flex flex-col-reverse items-center justify-between gap-4 border-t border-black/5 pt-8 sm:flex-row">
+            <p className="text-center text-sm text-zinc-500 sm:text-left">
+              © 2026 CartIQ. Developed by Chirayu Jayaswal & Team.   All Rights
+              Reserved.
             </p>
 
             <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.15em] text-zinc-400">
-              <Sparkles className="h-3.5 w-3.5 text-indigo-500" />
-              Powered by CartIQ AI
+              <Sparkles className="h-3.5 w-3.5 shrink-0 text-indigo-500" />
+              <span>Powered by DeepSeek AI &amp; CartIQ Intelligence</span>
             </div>
           </div>
         </div>

@@ -2,19 +2,26 @@
 
 import ProductCard from "./ProductCard";
 
+type AssistantProduct = {
+  id: string;
+  title: string;
+  slug: string;
+  price: number;
+  sale_price?: number;
+  salePrice?: number;
+  product_images?: Array<{ image_url: string }>;
+};
+
 type Props = {
-  products: any[];
+  products: AssistantProduct[];
 };
 
 export default function ProductCarousel({
   products,
 }: Props) {
-  
-console.log(
-  "FIRST PRODUCT:",
-  JSON.stringify(products[0], null, 2)
-);
-  if (!products?.length) return null;
+  if (!products || products.length === 0) {
+    return null;
+  }
 
   return (
 
