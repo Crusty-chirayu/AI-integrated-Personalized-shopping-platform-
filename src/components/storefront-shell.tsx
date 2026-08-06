@@ -611,7 +611,7 @@ export function StorefrontShell({
 
           <div className="mt-14 flex flex-col-reverse items-center justify-between gap-4 border-t border-black/5 pt-8 sm:flex-row">
             <p className="text-center text-sm text-zinc-500 sm:text-left">
-              © 2026 CartIQ. Developed by Chirayu Jayaswal & Team.   All Rights
+              © 2026 CartIQ. Developed by Chirayu Babu Jaysawal & Team.   |   All Rights
               Reserved.
             </p>
 
