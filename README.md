@@ -688,4 +688,4 @@ MIT
 
 </div>
 
-Deployed site preview : https://ai-integrated-personalized-shopping.vercel.app/
+Deployed site preview : [https://ai-integrated-personalized-shopping.vercel.app/](https://ai-integrated-personalized-shopping-platform-p2c3vutg8.vercel.app/)
