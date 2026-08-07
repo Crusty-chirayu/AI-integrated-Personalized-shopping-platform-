@@ -688,4 +688,4 @@ MIT
 
 </div>
 
-Deployed site preview : Deploying soon...
+Deployed site preview : https://ai-integrated-personalized-shopping-platform-nzovyhk29.vercel.app/
