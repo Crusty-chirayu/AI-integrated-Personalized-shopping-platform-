@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { LoginButtons } from "@/components/login-buttons";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
@@ -48,7 +49,6 @@ export default function LoginPage() {
   // ─────────────────────────────────────────────────────────────────
   const [showPassword, setShowPassword] = useState(false);
   const [emailTouched, setEmailTouched] = useState(false);
-  const [oauthNotice, setOauthNotice] = useState("");
 
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -71,10 +71,7 @@ export default function LoginPage() {
   // through useAuth once those providers are available. This is a
   // presentational stub only — it intentionally does not claim to sign
   // the user in.
-  function handleOAuthStub(provider: string) {
-    setOauthNotice(`${provider} sign-in is coming soon — use email for now.`);
-    window.setTimeout(() => setOauthNotice(""), 3500);
-  }
+
 
   return (
     <main className="cq-shell cq-font relative min-h-screen overflow-hidden bg-[#07070B] lg:bg-white">
@@ -447,50 +444,7 @@ export default function LoginPage() {
                 <span className="h-px flex-1 bg-black/10" />
               </div>
 
-              {/* Social sign-in — presentational, not yet wired to a provider */}
-              <div className="grid grid-cols-3 gap-3">
-                {[
-                  { name: "Google", provider: "Google" },
-                  { name: "Microsoft", provider: "Microsoft" },
-                  { name: "GitHub", provider: "GitHub" },
-                ].map((p) => (
-                  <button
-                    key={p.provider}
-                    type="button"
-                    onClick={() => handleOAuthStub(p.provider)}
-                    aria-label={`Continue with ${p.name}`}
-                    className="cq-focus flex items-center justify-center rounded-2xl border border-black/10 bg-white py-3 text-gray-700 transition-all hover:-translate-y-0.5 hover:border-black/20 hover:shadow-md active:translate-y-0"
-                  >
-                    {p.provider === "Google" && (
-                      <svg viewBox="0 0 24 24" className="h-5 w-5">
-                        <path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.2-2.27H12v4.3h6.47a5.53 5.53 0 0 1-2.4 3.63v3h3.88c2.27-2.09 3.54-5.17 3.54-8.66Z" />
-                        <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.87-3c-1.08.72-2.45 1.15-4.06 1.15-3.13 0-5.78-2.11-6.73-4.96H1.27v3.1A12 12 0 0 0 12 24Z" />
-                        <path fill="#FBBC05" d="M5.27 14.28A7.2 7.2 0 0 1 4.89 12c0-.79.14-1.56.38-2.28v-3.1H1.27A12 12 0 0 0 0 12c0 1.94.46 3.77 1.27 5.38l4-3.1Z" />
-                        <path fill="#EA4335" d="M12 4.75c1.76 0 3.34.6 4.58 1.79l3.44-3.44C17.94 1.19 15.24 0 12 0A12 12 0 0 0 1.27 6.62l4 3.1C6.22 6.86 8.87 4.75 12 4.75Z" />
-                      </svg>
-                    )}
-                    {p.provider === "Microsoft" && (
-                      <svg viewBox="0 0 24 24" className="h-5 w-5">
-                        <path fill="#F25022" d="M1 1h10v10H1z" />
-                        <path fill="#7FBA00" d="M13 1h10v10H13z" />
-                        <path fill="#00A4EF" d="M1 13h10v10H1z" />
-                        <path fill="#FFB900" d="M13 13h10v10H13z" />
-                      </svg>
-                    )}
-                    {p.provider === "GitHub" && (
-                      <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor">
-                        <path d="M12 .5a12 12 0 0 0-3.79 23.4c.6.11.82-.26.82-.58v-2.02c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.21.08 1.85 1.24 1.85 1.24 1.07 1.84 2.81 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.49 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58A12 12 0 0 0 12 .5Z" />
-                      </svg>
-                    )}
-                  </button>
-                ))}
-              </div>
 
-              {oauthNotice && (
-                <p role="status" className="cq-font mt-3 text-center text-[12px] text-gray-500">
-                  {oauthNotice}
-                </p>
-              )}
 
               {/* Floating accent card */}
               <div className="cq-rise cq-rise-4 absolute -right-6 -top-6 hidden rounded-2xl border border-black/5 bg-white px-4 py-3 shadow-[0_12px_28px_rgba(17,17,17,0.12)] sm:block">

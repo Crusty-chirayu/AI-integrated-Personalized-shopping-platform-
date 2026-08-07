@@ -115,6 +115,11 @@ function TypingIndicator() {
 /*  Main component                                                     */
 /* ------------------------------------------------------------------ */
 
+// Layout constants — presentational only. Change these to tweak the
+// panel's footprint without touching any logic below.
+const PANEL_MAX_HEIGHT = 560; // px — panel never grows taller than this
+const PANEL_WIDTH = 400; // px — compact, contextual width (not a full ChatGPT window)
+
 export default function ProductAIChat({ open, onClose, product }: Props) {
   const [input, setInput] = useState("");
   const [showQuestions, setShowQuestions] = useState(false);
@@ -251,49 +256,71 @@ Ask me anything about ${product.title}.`,
     [sendMessage]
   );
 
+  // Suggestions are only meaningful before the conversation has started —
+  // once the shopper has sent a message, hide the toggle entirely so the
+  // compact panel stays focused on the conversation rather than growing.
+  const isFreshConversation = messages.length === 1;
+
+  useEffect(() => {
+    if (!isFreshConversation && showQuestions) {
+      setShowQuestions(false);
+    }
+  }, [isFreshConversation, showQuestions]);
+
   return (
     <AnimatePresence>
       {open && (
-        <motion.div
-          className="fixed inset-0 z-50 bg-black/40"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.25, ease: "easeOut" }}
-          onClick={handleOverlayClick}
-        >
+        <>
+          {/* Invisible click-catcher — closes the panel on outside click
+              without dimming the page. This keeps the assistant feeling
+              like a contextual widget rather than a full-screen modal. */}
+          <motion.div
+            className="fixed inset-0 z-40"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={handleOverlayClick}
+          />
+
           <motion.div
             ref={panelRef}
             role="dialog"
             aria-modal="true"
             aria-label={`CartIQ AI Product Assistant for ${product.title}`}
-            className="absolute right-0 top-0 flex h-full w-full flex-col bg-white shadow-2xl sm:w-[420px] lg:w-[430px]"
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "tween", duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+            className="fixed bottom-6 right-6 z-50 flex w-[calc(100vw-3rem)] flex-col overflow-hidden rounded-3xl border border-black/5 bg-white shadow-2xl"
+            style={{
+              maxHeight: PANEL_MAX_HEIGHT,
+              height: PANEL_MAX_HEIGHT,
+              width: PANEL_WIDTH,
+              maxWidth: "calc(100vw - 3rem)",
+            }}
+            initial={{ opacity: 0, y: 16, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 16, scale: 0.97 }}
+            transition={{ type: "tween", duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
             onClick={handlePanelClick}
           >
-            {/* Header (sticky, non-scrolling) */}
-            <div className="flex shrink-0 items-center justify-between border-b border-zinc-200 bg-white px-4 py-4 sm:px-5">
-              <div className="flex items-center gap-3">
+            {/* Header (fixed, non-scrolling) */}
+            <div className="flex shrink-0 items-center justify-between border-b border-zinc-200 bg-white px-4 py-3.5">
+              <div className="flex items-center gap-2.5">
                 <button
                   onClick={onClose}
                   aria-label="Go back to product page"
-                  className="rounded-lg p-2 text-zinc-500 transition-colors duration-150 hover:bg-zinc-100 hover:text-zinc-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400"
+                  className="rounded-lg p-1.5 text-zinc-500 transition-colors duration-150 hover:bg-zinc-100 hover:text-zinc-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400"
                 >
-                  <ArrowLeft className="h-5 w-5" />
+                  <ArrowLeft className="h-4.5 w-4.5" />
                 </button>
 
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-zinc-900 text-white">
-                  <Bot className="h-5 w-5" />
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-zinc-900 text-white">
+                  <Bot className="h-4.5 w-4.5" />
                 </div>
 
                 <div>
-                  <h2 className="text-base font-bold leading-tight sm:text-lg">
+                  <h2 className="text-sm font-bold leading-tight">
                     CartIQ AI
                   </h2>
-                  <p className="text-xs text-zinc-500 sm:text-sm">
+                  <p className="text-xs text-zinc-500">
                     Product Assistant
                   </p>
                 </div>
@@ -302,15 +329,15 @@ Ask me anything about ${product.title}.`,
               <button
                 onClick={onClose}
                 aria-label="Close AI assistant"
-                className="rounded-lg p-2 text-zinc-500 transition-colors duration-150 hover:bg-zinc-100 hover:text-zinc-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400"
+                className="rounded-lg p-1.5 text-zinc-500 transition-colors duration-150 hover:bg-zinc-100 hover:text-zinc-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400"
               >
-                <X className="h-5 w-5" />
+                <X className="h-4.5 w-4.5" />
               </button>
             </div>
 
-            {/* Chat Area (the only scrollable region) */}
-            <div className="flex-1 overflow-y-auto scroll-smooth p-5">
-              <div className="space-y-4">
+            {/* Chat Area (the ONLY scrollable region — panel itself never grows) */}
+            <div className="flex-1 overflow-y-auto scroll-smooth px-4 py-4">
+              <div className="space-y-3">
                 <AnimatePresence initial={false}>
                   {messages.map((message, index) => {
                     const isAssistant = message.role === "assistant";
@@ -318,36 +345,38 @@ Ask me anything about ${product.title}.`,
                     return (
                       <motion.div
                         key={index}
-                        initial={{ opacity: 0, y: 12 }}
+                        initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.25, ease: "easeOut" }}
-                        className={`max-w-[92%] rounded-2xl p-4 ${
+                        transition={{ duration: 0.22, ease: "easeOut" }}
+                        className={`max-w-[92%] rounded-2xl p-3.5 text-sm ${
                           isAssistant
                             ? "bg-zinc-100"
                             : "ml-auto bg-zinc-900 text-white"
                         }`}
                       >
                         {typeof message.content === "string" ? (
-                          <p className="whitespace-pre-wrap">
+                          <p className="whitespace-pre-wrap leading-relaxed">
                             {message.content}
                           </p>
                         ) : (
-                          <div className="space-y-4">
+                          <div className="space-y-3">
                             <div>
-                              <h3 className="text-lg font-semibold">
+                              <h3 className="text-[15px] font-semibold">
                                 🧠 {message.content.title}
                               </h3>
 
-                              <p className="mt-2 text-sm text-zinc-700">
+                              <p className="mt-1.5 text-sm text-zinc-700">
                                 {message.content.summary}
                               </p>
                             </div>
 
                             {message.content.highlights.length > 0 && (
                               <div>
-                                <h4 className="font-medium">Highlights</h4>
+                                <h4 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+                                  Highlights
+                                </h4>
 
-                                <ul className="mt-2 space-y-2">
+                                <ul className="mt-1.5 space-y-1.5 text-sm">
                                   {message.content.highlights.map(
                                     (item, i) => (
                                       <li key={i}>✅ {item}</li>
@@ -361,14 +390,14 @@ Ask me anything about ${product.title}.`,
                               <motion.div
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
-                                transition={{ duration: 0.3, delay: 0.1 }}
-                                className="rounded-xl bg-white p-4"
+                                transition={{ duration: 0.25, delay: 0.08 }}
+                                className="rounded-xl bg-white p-3.5"
                               >
-                                <h4 className="font-semibold">
+                                <h4 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
                                   💡 Recommendation
                                 </h4>
 
-                                <p className="mt-2 text-sm">
+                                <p className="mt-1.5 text-sm">
                                   {message.content.recommendation}
                                 </p>
                               </motion.div>
@@ -386,51 +415,64 @@ Ask me anything about ${product.title}.`,
               </div>
             </div>
 
-            {/* Suggested Questions */}
-            <div className="shrink-0 border-t border-zinc-200 p-4">
-              <button
-                onClick={toggleQuestions}
-                aria-expanded={showQuestions}
-                className="flex w-full items-center justify-between text-sm font-medium text-zinc-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400"
-              >
-                <span>Suggested questions</span>
-                {showQuestions ? (
-                  <ChevronDown className="h-4 w-4" />
-                ) : (
-                  <ChevronRight className="h-4 w-4" />
-                )}
-              </button>
+            {/* Suggested Questions — only shown before the first user message,
+                so the compact panel stays focused once a conversation starts. */}
+            <AnimatePresence initial={false}>
+              {isFreshConversation && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.22, ease: "easeOut" }}
+                  className="shrink-0 overflow-hidden border-t border-zinc-200"
+                >
+                  <div className="p-3.5">
+                    <button
+                      onClick={toggleQuestions}
+                      aria-expanded={showQuestions}
+                      className="flex w-full items-center justify-between text-xs font-medium text-zinc-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400"
+                    >
+                      <span>Suggested questions</span>
+                      {showQuestions ? (
+                        <ChevronDown className="h-3.5 w-3.5" />
+                      ) : (
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      )}
+                    </button>
 
-              <AnimatePresence initial={false}>
-                {showQuestions && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.2, ease: "easeOut" }}
-                    className="overflow-hidden"
-                  >
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {suggestedQuestions.map((question) => (
-                        <motion.button
-                          key={question}
-                          onClick={() => askQuestion(question)}
-                          disabled={loading}
-                          whileHover={{ scale: 1.04 }}
-                          whileTap={{ scale: 0.97 }}
-                          className="rounded-full border border-zinc-200 bg-white px-3.5 py-1.5 text-xs text-zinc-700 shadow-sm transition-shadow duration-150 hover:shadow-md hover:bg-zinc-50 disabled:opacity-50"
+                    <AnimatePresence initial={false}>
+                      {showQuestions && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.18, ease: "easeOut" }}
+                          className="overflow-hidden"
                         >
-                          {question}
-                        </motion.button>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+                          <div className="mt-2.5 flex max-h-28 flex-wrap gap-1.5 overflow-y-auto pr-0.5">
+                            {suggestedQuestions.map((question) => (
+                              <motion.button
+                                key={question}
+                                onClick={() => askQuestion(question)}
+                                disabled={loading}
+                                whileHover={{ scale: 1.03 }}
+                                whileTap={{ scale: 0.97 }}
+                                className="rounded-full border border-zinc-200 bg-white px-3 py-1.5 text-xs text-zinc-700 shadow-sm transition-shadow duration-150 hover:bg-zinc-50 hover:shadow-md disabled:opacity-50"
+                              >
+                                {question}
+                              </motion.button>
+                            ))}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-            {/* Input Bar (sticky, non-scrolling) */}
-            <div className="shrink-0 border-t border-zinc-200 bg-white p-4">
+            {/* Input Bar (fixed, non-scrolling) */}
+            <div className="shrink-0 border-t border-zinc-200 bg-white p-3.5">
               <div className="flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-2 py-1.5 shadow-sm transition-shadow duration-150 focus-within:border-zinc-400 focus-within:shadow-md focus-within:ring-2 focus-within:ring-zinc-200">
                 <input
                   value={input}
@@ -446,14 +488,14 @@ Ask me anything about ${product.title}.`,
                   onClick={sendMessage}
                   disabled={loading || !input.trim()}
                   aria-label="Send message"
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-zinc-800 to-zinc-950 text-white transition-transform duration-150 hover:-translate-y-0.5 hover:shadow-lg disabled:translate-y-0 disabled:opacity-40 disabled:shadow-none focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400"
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-zinc-800 to-zinc-950 text-white transition-transform duration-150 hover:-translate-y-0.5 hover:shadow-lg disabled:translate-y-0 disabled:opacity-40 disabled:shadow-none focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400"
                 >
-                  <Send className="h-4 w-4" />
+                  <Send className="h-3.5 w-3.5" />
                 </button>
               </div>
             </div>
           </motion.div>
-        </motion.div>
+        </>
       )}
     </AnimatePresence>
   );

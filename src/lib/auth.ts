@@ -23,3 +23,24 @@ export async function getCurrentUser() {
 
   return user;
 }
+export async function signInWithProvider(
+  provider: "google" | "github"
+) {
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider,
+    options: {
+      redirectTo: `${window.location.origin}/auth/callback`,
+    },
+  });
+
+  if (error) {
+    console.error(error);
+    return null;
+  }
+
+  return data;
+}
+
+export async function signOut() {
+  await supabase.auth.signOut();
+}
