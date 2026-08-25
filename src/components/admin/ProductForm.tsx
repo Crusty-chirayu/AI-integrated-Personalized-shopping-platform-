@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { Save } from "lucide-react";
 
 import {
@@ -489,9 +490,12 @@ imageUrl: imageUrls[0] ?? "",      categoryId: category,
     {previews.map((preview, index) => (
       <div key={index} className="relative">
 
-        <img
+        <Image
           src={preview}
           alt={`Preview ${index + 1}`}
+          width={320}
+          height={160}
+          unoptimized
           className="h-40 w-full rounded-xl border object-cover"
         />
 

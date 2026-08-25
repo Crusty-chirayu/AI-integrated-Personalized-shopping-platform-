@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { useParams } from "next/navigation";
@@ -307,9 +308,11 @@ doc.text(
                 className="flex items-center justify-between gap-6 border-b pb-5 last:border-0"
               >
                 <div className="flex items-center gap-5">
-                  <img
+                  <Image
                     src={image}
                     alt={item.products?.title || item.title}
+                    width={96}
+                    height={96}
                     className="h-24 w-24 rounded-xl border border-zinc-200 object-cover"
                   />
 

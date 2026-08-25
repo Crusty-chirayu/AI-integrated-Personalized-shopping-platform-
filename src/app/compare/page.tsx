@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 import { useCompare } from "@/contexts/compare-context";
 
 export default function ComparePage() {
@@ -38,9 +40,11 @@ export default function ComparePage() {
             key={product.id}
             className="rounded-2xl border p-6"
           >
-            <img
+            <Image
               src={product.image}
               alt={product.title}
+              width={600}
+              height={288}
               className="h-72 w-full rounded-xl object-cover"
             />
 

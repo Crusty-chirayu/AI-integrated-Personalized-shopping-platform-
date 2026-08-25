@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useCallback, useId } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import Image from "next/image";
 import {
   Sparkles,
   TrendingUp,
@@ -433,11 +434,12 @@ export default function ComparisonCard({
 
                 <div className="flex items-center justify-center rounded-2xl bg-zinc-50 p-4">
                   {image ? (
-                    <img
+                    <Image
                       src={image}
                       alt={product?.title ?? "Product image"}
+                      width={220}
+                      height={160}
                       loading="lazy"
-                      decoding="async"
                       className="h-40 w-full max-w-[220px] object-contain"
                     />
                   ) : (

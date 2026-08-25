@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import {
   motion,
   useMotionValue,
@@ -91,11 +92,13 @@ export function ProductCard({ product }: { product: Product }) {
           <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-zinc-100 to-zinc-200" />
         )}
 
-        <img
+        <Image
           src={product.image}
           alt={product.title}
+          fill
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
           onLoad={() => setImageLoaded(true)}
-          className={`h-full w-full object-cover transition-all duration-700 ease-out group-hover:scale-110 ${
+          className={`object-cover transition-all duration-700 ease-out group-hover:scale-110 ${
             imageLoaded ? "opacity-100" : "opacity-0"
           }`}
         />

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { getSupabaseAdmin } from "@/lib/supabase-server";
 
 type MediaItem = {
@@ -23,7 +24,13 @@ export default async function AdminMediaPage() {
       <div className="grid gap-4 md:grid-cols-3">
         {media.map((item) => (
           <div key={item.id} className="rounded-[28px] border border-black/5 bg-white p-4 shadow-sm">
-            <img src={item.url} alt={item.filename ?? "Media asset"} className="h-32 w-full rounded-[20px] object-cover" />
+            <Image
+              src={item.url}
+              alt={item.filename ?? "Media asset"}
+              width={400}
+              height={128}
+              className="h-32 w-full rounded-[20px] object-cover"
+            />
             <p className="mt-4 text-sm font-medium text-zinc-900">{item.filename ?? "Uploaded asset"}</p>
           </div>
         ))}

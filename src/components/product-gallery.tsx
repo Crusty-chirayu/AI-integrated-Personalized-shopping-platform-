@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import {
   useCallback,
   useEffect,
@@ -188,11 +189,12 @@ export default function ProductGallery({
                     : "border-transparent group-hover:border-zinc-300"
                 }`}
               />
-              <img
+              <Image
                 src={image}
                 alt={`${productName} thumbnail ${index + 1}`}
+                width={64}
+                height={64}
                 loading="lazy"
-                decoding="async"
                 className="relative z-[1] h-16 w-16 object-cover transition-transform duration-500 ease-out group-hover:scale-110"
               />
             </button>
@@ -253,24 +255,31 @@ export default function ProductGallery({
 
           <div className="relative h-full min-h-[420px] w-full overflow-hidden rounded-[24px] sm:min-h-[520px] lg:min-h-[620px]">
             <AnimatePresence mode="wait" initial={false}>
-              <motion.img
+              <motion.div
                 key={selectedIndex}
-                src={activeImage}
-                alt={`${productName} — image ${selectedIndex + 1} of ${gallery.length}`}
-                loading={selectedIndex === 0 ? "eager" : "lazy"}
-                decoding="async"
-                onLoad={() => markLoaded(selectedIndex)}
                 initial={{ opacity: 0, scale: 1.04 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.98 }}
                 transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-                style={{ transformOrigin: `${lensPos.x}% ${lensPos.y}%` }}
-                className={`h-full w-full cursor-zoom-in object-cover transition-[transform,filter] duration-500 ease-out will-change-transform ${
-                  isZoomed
-                    ? "scale-[2] cursor-zoom-out"
-                    : "scale-100 group-hover:scale-[1.06]"
-                } ${loaded[selectedIndex] ? "blur-none" : "blur-lg"}`}
-              />
+                className="absolute inset-0"
+              >
+                <Image
+                  src={activeImage}
+                  alt={`${productName} — image ${selectedIndex + 1} of ${gallery.length}`}
+                  fill
+                  priority={selectedIndex === 0}
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 70vw"
+                  onLoad={() => markLoaded(selectedIndex)}
+                  style={{
+                    transformOrigin: `${lensPos.x}% ${lensPos.y}%`,
+                  }}
+                  className={`h-full w-full cursor-zoom-in object-cover transition-[transform,filter] duration-500 ease-out will-change-transform ${
+                    isZoomed
+                      ? "scale-[2] cursor-zoom-out"
+                      : "scale-100 group-hover:scale-[1.06]"
+                  } ${loaded[selectedIndex] ? "blur-none" : "blur-lg"}`}
+                />
+              </motion.div>
             </AnimatePresence>
 
             {/* Gradient overlay for depth / legibility */}
@@ -363,24 +372,35 @@ export default function ProductGallery({
               onTouchEnd={handleTouchEnd}
             >
               <AnimatePresence mode="wait" initial={false}>
-                <motion.img
-                  key={selectedIndex}
-                  src={activeImage}
-                  alt={`${productName} — fullscreen image ${selectedIndex + 1} of ${gallery.length}`}
-                  drag={fsScale > 1 ? true : "x"}
-                  dragElastic={0.12}
-                  dragMomentum={fsScale <= 1}
-                  onDragEnd={handleDragEnd}
-                  onDoubleClick={handleFsDoubleClick}
-                  initial={{ opacity: 0, scale: 0.94 }}
-                  animate={{ opacity: 1, scale: fsScale }}
-                  exit={{ opacity: 0, scale: 0.94 }}
-                  transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                  className={`max-h-full max-w-full select-none rounded-2xl object-contain shadow-[0_40px_100px_-20px_rgba(0,0,0,0.6)] ${
-                    fsScale > 1 ? "cursor-grab active:cursor-grabbing" : "cursor-zoom-in"
-                  }`}
-                  draggable={false}
-                />
+
+
+<motion.div
+  key={selectedIndex}
+  drag={fsScale > 1 ? true : "x"}
+  dragElastic={0.12}
+  dragMomentum={fsScale <= 1}
+  onDragEnd={handleDragEnd}
+  onDoubleClick={handleFsDoubleClick}
+  initial={{ opacity: 0, scale: 0.94 }}
+  animate={{ opacity: 1, scale: fsScale }}
+  exit={{ opacity: 0, scale: 0.94 }}
+  transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+  className={`relative h-full w-full max-h-full max-w-full select-none rounded-2xl ${
+    fsScale > 1 ? "cursor-grab active:cursor-grabbing" : "cursor-zoom-in"
+  }`}
+>
+  <Image
+    src={activeImage}
+    alt={`${productName} — fullscreen image ${selectedIndex + 1} of ${gallery.length}`}
+    fill
+    sizes="100vw"
+    className="rounded-2xl object-contain shadow-[0_40px_100px_-20px_rgba(0,0,0,0.6)]"
+    draggable={false}
+  />
+</motion.div>
+
+
+
               </AnimatePresence>
             </motion.div>
 

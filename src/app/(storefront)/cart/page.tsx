@@ -275,9 +275,11 @@ export default function CartPage() {
                         transition={{ duration: 0.3, ease: easeInOut }}
                         className="flex items-center gap-4 rounded-2xl border border-dashed border-black/10 bg-zinc-50/60 p-3"
                       >
-                        <img
+                        <Image
                           src={item.product.image}
                           alt={item.product.title}
+                          width={56}
+                          height={56}
                           loading="lazy"
                           className="h-14 w-14 shrink-0 rounded-xl object-cover opacity-90"
                         />
@@ -530,9 +532,11 @@ const CartItemCard = memo(function CartItemCard({
       className="flex flex-col gap-4 rounded-[24px] border border-black/5 bg-white/90 p-4 shadow-[0_8px_30px_rgba(0,0,0,0.04)] backdrop-blur-sm transition-shadow duration-300 hover:shadow-[0_20px_60px_rgba(0,0,0,0.08)] sm:flex-row sm:items-center"
     >
       <div className="relative shrink-0">
-        <img
+        <Image
           src={item.product.image}
           alt={item.product.title}
+          width={112}
+          height={112}
           loading="lazy"
           className="h-28 w-28 rounded-[18px] object-cover"
         />

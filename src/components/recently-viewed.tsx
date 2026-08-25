@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 type Product = {
   slug: string;
@@ -72,12 +73,14 @@ export default function RecentlyViewed({
             href={`/products/${product.slug}`}
             className="group w-56 shrink-0 rounded-3xl border border-zinc-200 bg-white p-4 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
           >
-            <div className="aspect-square overflow-hidden rounded-2xl bg-zinc-100">
+            <div className="relative aspect-square overflow-hidden rounded-2xl bg-zinc-100">
               {product.image && (
-                <img
+                <Image
                   src={product.image}
                   alt={product.name}
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  fill
+                  sizes="224px"
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
                 />
               )}
             </div>

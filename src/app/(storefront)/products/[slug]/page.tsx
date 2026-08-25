@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import RecentlyViewed from "@/components/recently-viewed";
 import {
   ArrowLeft,
@@ -590,13 +591,14 @@ export default async function ProductDetailPage({
                   href={`/products/${related.slug}`}
                   className="group w-64 shrink-0 rounded-[24px] border border-black/5 bg-white/75 p-4 shadow-sm backdrop-blur-md transition-all duration-300 hover:-translate-y-1.5 hover:border-indigo-100 hover:shadow-[0_24px_48px_rgba(79,70,229,0.14)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2"
                 >
-                  <div className="aspect-square overflow-hidden rounded-2xl bg-zinc-50">
+                  <div className="relative aspect-square overflow-hidden rounded-2xl bg-zinc-50">
                     {(related.images?.[0] ?? related.image) && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
+                      <Image
                         src={related.images?.[0] ?? related.image}
                         alt={related.name ?? "Related product"}
-                        className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                        fill
+                        sizes="256px"
+                        className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                       />
                     )}
                   </div>

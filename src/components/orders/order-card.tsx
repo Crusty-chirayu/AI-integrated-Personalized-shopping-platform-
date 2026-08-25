@@ -1,6 +1,7 @@
 "use client";
 
 import { memo, useMemo } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
@@ -204,7 +205,14 @@ function OrderCardImpl({
           {items.map((item, i) => (
             <div key={i} className="flex items-center gap-3">
               {item.image ? (
-                <img src={item.image} alt="" loading="lazy" className="h-12 w-12 flex-none rounded-xl object-cover" />
+                <Image
+                  src={item.image}
+                  alt=""
+                  width={48}
+                  height={48}
+                  loading="lazy"
+                  className="h-12 w-12 flex-none rounded-xl object-cover"
+                />
               ) : (
                 <div className="h-12 w-12 flex-none rounded-xl bg-zinc-100" aria-hidden />
               )}

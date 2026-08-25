@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   motion,
@@ -514,9 +515,11 @@ function Hero({ heroImage }: { heroImage?: string }) {
           >
             {heroImage ? (
               <div className="mb-4 overflow-hidden rounded-[28px] border border-white/10 shadow-[0_30px_100px_rgba(0,0,0,0.45)]">
-                <img
+                <Image
                   src={heroImage}
                   alt="Featured product"
+                  width={800}
+                  height={224}
                   className="h-56 w-full object-cover"
                 />
               </div>
@@ -592,9 +595,11 @@ export function CartIQLanding({
                 className="group h-full overflow-hidden rounded-[28px] border border-black/5 bg-white shadow-sm transition-shadow duration-300 hover:shadow-[0_30px_80px_rgba(0,0,0,0.12)]"
               >
                 <div className="overflow-hidden">
-                  <img
+                  <Image
                     src={category.image}
                     alt={category.title}
+                    width={800}
+                    height={256}
                     className="h-64 w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                   />
                 </div>

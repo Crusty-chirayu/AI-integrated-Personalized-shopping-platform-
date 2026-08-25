@@ -10,6 +10,7 @@ import {
 } from "react";
 import { X, Search, Mic, Sparkles, Heart, ShoppingBag, TrendingUp, Clock, Pin } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { getSupabaseClient } from "@/lib/supabase";
 import { formatCurrency } from "@/lib/formatCurrency";
 
@@ -682,7 +683,13 @@ const ProductResultCard = memo(function ProductResultCard({
     >
       <button onClick={onSelect} className="flex flex-1 items-center gap-4 text-left">
         <div className="relative h-16 w-16 flex-none overflow-hidden rounded-[16px] bg-zinc-100">
-          <img src={product.image} alt={product.title} loading="lazy" className="h-full w-full object-cover" />
+          <Image
+            src={product.image}
+            alt={product.title}
+            fill
+            sizes="64px"
+            className="object-cover"
+          />
           {typeof product.discountPercent === "number" && product.discountPercent > 0 && (
             <span className="absolute left-1 top-1 rounded-full bg-black px-1.5 py-0.5 text-[10px] font-bold text-white">
               -{product.discountPercent}%

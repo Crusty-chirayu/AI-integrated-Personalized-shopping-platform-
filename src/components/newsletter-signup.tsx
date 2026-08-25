@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Sparkles, Tag, Bell, Rocket, Lightbulb, ShieldCheck, MailX, Lock } from "lucide-react";
 
@@ -327,11 +328,13 @@ export function NewsletterSignup({ subscriberCount, avatarUrls, testimonial }: N
             {avatarUrls && avatarUrls.length > 0 && (
               <div className="flex -space-x-2.5">
                 {avatarUrls.slice(0, 5).map((src, i) => (
-                  <img
+                  <Image
                     key={i}
                     src={src}
                     alt=""
                     aria-hidden
+                    width={32}
+                    height={32}
                     className="h-8 w-8 rounded-full border-2 border-[#07070B] object-cover"
                   />
                 ))}
