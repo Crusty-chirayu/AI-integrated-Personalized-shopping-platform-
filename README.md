@@ -688,4 +688,4 @@ MIT
 
 </div>
 
-Deployed site preview : https://ai-integrated-personalized-shopping.onrender.com
+Deployed site preview: Temporarily (Hidden from Open source for High traffic Backend testing). Will be Re-deployed soon.
