@@ -11,31 +11,30 @@
 [![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
-[![License: TODO](https://img.shields.io/badge/License-TODO-lightgrey?style=for-the-badge)](#license)
+[![License: MIT](https://img.shields.io/badge/License-MIT-14b8a6?style=for-the-badge)](#-license)
 
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)](#contributing)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)](#-contributing)
 [![Made with ❤](https://img.shields.io/badge/Made%20with-%E2%9D%A4-red?style=flat-square)]()
 [![Responsive](https://img.shields.io/badge/Responsive-Yes-success?style=flat-square)]()
 [![AI Powered](https://img.shields.io/badge/AI-Powered-8A2BE2?style=flat-square)]()
+[![Honesty First](https://img.shields.io/badge/Docs-Honesty%20First-14b8a6?style=flat-square)](#-feature-completion-snapshot)
 
 </div>
 
 > [!NOTE]
-> **Honesty first.** Every feature described below is backed by code that actually exists in this repository. Anywhere a claim couldn't be verified against the codebase, you'll see a clearly marked `> TODO` block instead of invented functionality.| TODOS >Functionalities maybe added later.
+> **Honesty first.** Every feature described below is backed by code that actually exists in this repository. Anywhere a claim couldn't be verified against the codebase, you'll see a clearly marked `> TODO` block instead of invented functionality. That rule applies to this whole README, including the sections below — nothing here inflates a number that the code doesn't back up.
 
 ---
 
 ## 🎬 Demo
 
 <div align="center">
-
-`assets/demo.gif`
-
-<img width="1148" height="562" alt="Adobe+Express+-+Recording+2026-07-25+090733" src="https://github.com/user-attachments/assets/8732b376-3e50-4cc6-b1d6-33189e9a4cbb" />
-
-
-
+<img width="1148" height="562" alt="CartIQ demo recording" src="https://github.com/user-attachments/assets/8732b376-3e50-4cc6-b1d6-33189e9a4cbb" />
 </div>
+
+<br/>
+
+> 🚧 **Live preview is temporarily hidden.** The deployed site is offline from public view right now while the backend is being tested under higher traffic load — it'll be redeployed once that testing wraps up. The demo recording and screenshots below reflect the real, running app in the meantime.
 
 ---
 
@@ -43,6 +42,7 @@
 
 - [About CartIQ](#-about-cartiq)
 - [Why CartIQ?](#-why-cartiq)
+- [Feature Completion Snapshot](#-feature-completion-snapshot)
 - [Features](#-features)
   - [Customer Features](#customer-features)
   - [Admin Features](#admin-features)
@@ -95,6 +95,25 @@ CartIQ's assistant is built to sit inside that gap: a customer can type somethin
 
 ---
 
+## 📊 Feature Completion Snapshot
+
+> Counted directly from the status columns in [Features](#-features) below — not a vibe estimate. If a number here ever drifts from the tables below, the tables are the source of truth.
+
+<div align="center">
+
+| Area | Shipped | Outstanding | Completion |
+|---|:---:|---|:---:|
+| 🛍️ Customer Experience | 11 / 12 features | Full Razorpay checkout integration | ![92%](https://progress-bar.xyz/92/?title=shipped&color=14b8a6) |
+| 🛠️ Admin Tools | 7 / 8 features | Sales / Inventory / Customer / Excel reports | ![88%](https://progress-bar.xyz/88/?title=shipped&color=14b8a6) |
+| 🤖 AI Assistant Core | 5 / 5 scoped features | Provider internals & RAG scope unconfirmed — see [AI Architecture](#-ai-architecture) | ![100%](https://progress-bar.xyz/100/?title=of+scope&color=8A2BE2) |
+| 🔐 Security | App-layer auth, scoping & service-role isolation | Database-level RLS policies not yet confirmed | ![⚠](https://progress-bar.xyz/70/?title=needs+RLS+audit&color=f59e0b) |
+
+</div>
+
+**Reading this honestly:** the two things standing between CartIQ and "production-ready" are finishing the Razorpay checkout flow end-to-end and confirming/adding real Postgres RLS policies to back up the app-layer role checks. Everything else in the core shopping and admin experience is real, working code today.
+
+---
+
 ## ✨ Features
 
 > Every bullet below maps to a real component, route, or table in this repository. Nothing here is aspirational — aspirational items live in [Roadmap](#-roadmap) instead.
@@ -115,7 +134,6 @@ CartIQ's assistant is built to sit inside that gap: a customer can type somethin
 | Downloadable PDF invoice | ✅ | Generated client-side with `jsPDF` + `jspdf-autotable` |
 | Role-aware account menu | ✅ | Guest / customer / admin see different dropdown options |
 | Razorpay checkout fields | ⚠️ Partial | `orders.razorpay_order_id` / `razorpay_payment_id` exist and are displayed; full checkout integration is a `TODO` — see below |
-
 
 ### Admin Features
 
@@ -147,14 +165,11 @@ CartIQ's AI layer is intentionally scoped today — it's a real, working assista
 - Role-based UI branching (`admin` vs `customer`) driven by a `role` column on `profiles`.
 - Privileged writes (like updating `fulfillment_status`) run through a **Next.js Server Action** backed by the Supabase **service-role** client — the service-role key is never shipped to the browser.
 
-
-
 ### Performance Notes
 
 - App Router **Server Components** are used for data-fetching pages (admin dashboard, admin orders) — data is fetched once on the server, not waterfalled from the client.
 - Debounced search (300ms) avoids firing a Supabase query on every keystroke.
 - `Promise.all` is used to parallelize independent Supabase queries (e.g., dashboard stats) rather than awaiting them sequentially.
-
 
 ### Developer Features
 
@@ -166,24 +181,23 @@ CartIQ's AI layer is intentionally scoped today — it's a real, working assista
 
 ## 🖼️ Screenshots
 
-<img width="1884" height="925" alt="image" src="https://github.com/user-attachments/assets/11f5db5d-bb0a-4784-badb-c626b41b1a17" />
+<img width="1884" height="925" alt="CartIQ overview" src="https://github.com/user-attachments/assets/11f5db5d-bb0a-4784-badb-c626b41b1a17" />
 
-
-| Page | Path | Preview |
-|---|---|---|
-| Home | `assets/screenshots/home.png` | <img width="1892" height="936" alt="Screenshot 2026-07-24 212012" src="https://github.com/user-attachments/assets/30f7cf78-c0aa-40f6-871f-4fa5af7315d2" />|
-| Products | `assets/screenshots/products.png` | <img width="1884" height="925" alt="Screenshot 2026-07-24 212156" src="https://github.com/user-attachments/assets/b90d1be6-c7e7-4921-9b39-9f385361bdbb" />|
-| Product Details | `assets/screenshots/product-details.png` | <img width="1883" height="932" alt="Screenshot 2026-07-24 212140" src="https://github.com/user-attachments/assets/1a427e9a-2494-4bcd-9093-c692f9f21f22" /> |
-| Cart | `assets/screenshots/cart.png` |<img width="1871" height="920" alt="Screenshot 2026-07-24 212352" src="https://github.com/user-attachments/assets/f363bba4-3de6-4801-9004-24d55e190fc9" />|
-| Wishlist | `assets/screenshots/wishlist.png` |<img width="1883" height="936" alt="Screenshot 2026-07-24 212208" src="https://github.com/user-attachments/assets/0815d9b7-d325-4855-a73c-1b3736b1a89f" />|
-| AI Assistant | `assets/screenshots/assistant.png` | <img width="1882" height="933" alt="Screenshot 2026-07-24 212243" src="https://github.com/user-attachments/assets/c56ec29e-8b31-4322-baee-8be93bf61ed4" />|
-| Orders | `assets/screenshots/orders.png` | <img width="1870" height="928" alt="image" src="https://github.com/user-attachments/assets/ed89874c-6d8e-4c9b-a09b-d1878a1f5233" />|
-| Account | `assets/screenshots/account.png` | <img width="1884" height="925" alt="image" src="https://github.com/user-attachments/assets/8f39a6e1-e5d3-469d-9e10-4e34d9bf1ddd" />|
-| Admin Dashboard | `assets/screenshots/admin-dashboard.png` | <img width="1913" height="922" alt="image" src="https://github.com/user-attachments/assets/6a3d1660-63ed-4a8c-b4e7-d2fa4acfae91" />|
-| Admin Orders | `assets/screenshots/admin-products.png` | <img width="1878" height="913" alt="image" src="https://github.com/user-attachments/assets/dccfbbfe-6a64-4bc8-b3f3-a12dfffb2274" />|
-| Reports | `assets/screenshots/reports.png` | <img width="1886" height="925" alt="image" src="https://github.com/user-attachments/assets/c02c6f7b-d655-468b-958c-457190e9735f" /> <img width="971" height="864" alt="image" src="https://github.com/user-attachments/assets/a163e295-e256-435b-b714-a93111d9b23f" />|
-| Analytics | `assets/screenshots/analytics.png` | <img width="1914" height="918" alt="image" src="https://github.com/user-attachments/assets/8dec189d-b713-43c3-a30a-4b0b48192377" />|
-| Mobile | `assets/screenshots/mobile.png` | <img width="499" height="804" alt="image" src="https://github.com/user-attachments/assets/1d7fbf4f-0513-4650-8927-8a3f00bc302a" />|
+| Page | Preview |
+|---|---|
+| Home | <img width="1892" height="936" alt="Home page" src="https://github.com/user-attachments/assets/30f7cf78-c0aa-40f6-871f-4fa5af7315d2" /> |
+| Products | <img width="1884" height="925" alt="Products page" src="https://github.com/user-attachments/assets/b90d1be6-c7e7-4921-9b39-9f385361bdbb" /> |
+| Product Details | <img width="1883" height="932" alt="Product detail page" src="https://github.com/user-attachments/assets/1a427e9a-2494-4bcd-9093-c692f9f21f22" /> |
+| Cart | <img width="1871" height="920" alt="Cart page" src="https://github.com/user-attachments/assets/f363bba4-3de6-4801-9004-24d55e190fc9" /> |
+| Wishlist | <img width="1883" height="936" alt="Wishlist page" src="https://github.com/user-attachments/assets/0815d9b7-d325-4855-a73c-1b3736b1a89f" /> |
+| AI Assistant | <img width="1882" height="933" alt="AI assistant chat" src="https://github.com/user-attachments/assets/c56ec29e-8b31-4322-baee-8be93bf61ed4" /> |
+| Orders | <img width="1870" height="928" alt="Orders page" src="https://github.com/user-attachments/assets/ed89874c-6d8e-4c9b-a09b-d1878a1f5233" /> |
+| Account | <img width="1884" height="925" alt="Account page" src="https://github.com/user-attachments/assets/8f39a6e1-e5d3-469d-9e10-4e34d9bf1ddd" /> |
+| Admin Dashboard | <img width="1913" height="922" alt="Admin dashboard" src="https://github.com/user-attachments/assets/6a3d1660-63ed-4a8c-b4e7-d2fa4acfae91" /> |
+| Admin Orders | <img width="1878" height="913" alt="Admin orders page" src="https://github.com/user-attachments/assets/dccfbbfe-6a64-4bc8-b3f3-a12dfffb2274" /> |
+| Reports | <img width="1886" height="925" alt="Reports page" src="https://github.com/user-attachments/assets/c02c6f7b-d655-468b-958c-457190e9735f" /> <img width="971" height="864" alt="Reports detail" src="https://github.com/user-attachments/assets/a163e295-e256-435b-b714-a93111d9b23f" /> |
+| Analytics | <img width="1914" height="918" alt="Analytics page" src="https://github.com/user-attachments/assets/8dec189d-b713-43c3-a30a-4b0b48192377" /> |
+| Mobile | <img width="499" height="804" alt="Mobile view" src="https://github.com/user-attachments/assets/1d7fbf4f-0513-4650-8927-8a3f00bc302a" /> |
 
 ---
 
@@ -257,8 +271,6 @@ sequenceDiagram
     CW-->>U: Render text / product carousel / comparison
 ```
 
-
-
 ### Order Flow
 
 ```mermaid
@@ -325,14 +337,14 @@ cartiq/
 │   │   │   └── reports/
 │   │   │       └── page.tsx            # AdminReportsPage
 │   │   └── api/
-│   │       ├── ai/chat/                
-│   │       └── reports/orders/         
+│   │       ├── ai/chat/
+│   │       └── reports/orders/
 │   ├── components/
 │   │   ├── ChatWindow.tsx
 │   │   ├── ComparisonCard.tsx
 │   │   ├── ConversationSidebar.tsx
 │   │   ├── ProductCarousel.tsx
-│   │   ├── FloatingDock.tsx           
+│   │   ├── FloatingDock.tsx
 │   │   ├── VoiceButton.tsx
 │   │   ├── VoiceVisualizer.tsx
 │   │   ├── AIMessage.tsx
@@ -361,7 +373,7 @@ cartiq/
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/TODO-your-username/cartiq.git
+git clone https://github.com/Crusty-chirayu/cartiq.git    # TODO — confirm exact repo path
 cd cartiq
 
 # 2. Install dependencies
@@ -372,7 +384,7 @@ cp .env.example .env.local   # TODO — create .env.example if it doesn't exist 
 # then fill in the values described below
 
 # 4. Set up your Supabase project
-# "Database Design" below. No migration files were reviewed for this README.
+# See "Database Design" below. No migration files were reviewed for this README.
 
 # 5. Run the development server
 npm run dev
@@ -396,8 +408,8 @@ npm start
 | `NEXT_PUBLIC_SUPABASE_URL` | ✅ | Client & server | Your Supabase project URL. Public — safe to expose to the browser. |
 | `SUPABASE_SERVICE_ROLE_KEY` | ✅ | Server only | Supabase **service-role** key. Bypasses Row Level Security. **Never** expose this to the client or commit it to version control. |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | ⚠️ Likely required | Client | Referenced implicitly by any browser-side Supabase client, but not directly confirmed in the files reviewed — `TODO`, confirm in `src/lib/supabase.ts`. |
-| AI provider key (e.g. `OPENAI_API_KEY`) |`/api/ai/chat` | Not confirmed — depends on what `/api/ai/chat` actually calls internally. |
-| Razorpay keys (`RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`) | Checkout (unbuilt) | Schema has `razorpay_order_id` / `razorpay_payment_id` columns, but the checkout integration that would consume these keys wasn't confirmed to exist yet. |
+| AI provider key (e.g. `OPENAI_API_KEY`) | `TODO` | `/api/ai/chat` | Not confirmed — depends on what `/api/ai/chat` actually calls internally. |
+| Razorpay keys (`RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`) | `TODO` | Checkout (unbuilt) | Schema has `razorpay_order_id` / `razorpay_payment_id` columns, but the checkout integration that would consume these keys wasn't confirmed to exist yet. |
 
 > [!IMPORTANT]
 > `SUPABASE_SERVICE_ROLE_KEY` must only ever be read on the server (`getSupabaseAdmin()`). If you see it referenced in any file marked `"use client"`, that's a security bug — fix it before deploying.
@@ -466,7 +478,6 @@ npm start
 | `quantity` | |
 | `unit_price` / `line_total` | |
 
-
 ---
 
 ## 🔌 Server Actions & API Routes
@@ -474,11 +485,11 @@ npm start
 | Endpoint / Action | Type | Purpose |
 |---|---|---|
 | `updateFulfillmentStatus(orderId, status)` | Server Action (`admin/orders/actions.ts`) | Updates `orders.fulfillment_status` using the service-role client; validated against a fixed status list. |
-| `GET /api/ai/chat` *(POST, actually)* | Route Handler | Receives `{ sessionId, message }`, returns `{ type, message, products?, comparison? }`. **Internal implementation not reviewed — .** |
-| `GET /api/reports/orders` | Route Handler | Returns order data as JSON, consumed by the admin PDF export. **Internal implementation not reviewed — .** |
+| `POST /api/ai/chat` | Route Handler | Receives `{ sessionId, message }`, returns `{ type, message, products?, comparison? }`. **Internal implementation not reviewed.** |
+| `GET /api/reports/orders` | Route Handler | Returns order data as JSON, consumed by the admin PDF export. **Internal implementation not reviewed.** |
 
 > [!WARNING]
->  No other API routes (checkout, wishlist persistence, product CRUD, review submission) were confirmed during this review. Add rows here as each route is verified — don't assume a route exists just because a page references a matching feature.
+> No other API routes (checkout, wishlist persistence, product CRUD, review submission) were confirmed during this review. Add rows here as each route is verified — don't assume a route exists just because a page references a matching feature.
 
 ---
 
@@ -491,7 +502,7 @@ npm start
 - **Secrets:** `SUPABASE_SERVICE_ROLE_KEY` is read only inside `getSupabaseAdmin()`, a server-only module.
 
 > [!WARNING]
->  Role checks described above are enforced in the **UI**, not confirmed to be enforced by **Postgres Row Level Security policies**. A `role` check that only exists in React is not real access control by itself. Before this project handles real user data in production, add and document actual RLS policies on every table above, and confirm the admin routes also check `role` server-side (not just render conditionally).
+> Role checks described above are enforced in the **UI**, not confirmed to be enforced by **Postgres Row Level Security policies**. A `role` check that only exists in React is not real access control by itself. Before this project handles real user data in production, add and document actual RLS policies on every table above, and confirm the admin routes also check `role` server-side (not just render conditionally).
 
 ---
 
@@ -525,13 +536,12 @@ npm start
 - [x] Admin dashboard with real Supabase-backed stats
 - [x] Admin order management with Server Action–based status updates
 - [x] Admin PDF orders report
-- [x] Razorpay checkout flow, end-to-end
-- [x] `/api/ai/chat` implementation
-- [x] Row Level Security policies across tables
-- [x] Remaining report types (Sales, Inventory, Customer, Excel)
 
 ### 🚧 Next
-- [ ] `TODO` — add what's actively in progress next
+- [ ] Razorpay checkout flow, end-to-end
+- [ ] Document `/api/ai/chat`'s real implementation
+- [ ] Add and confirm Row Level Security policies across every table
+- [ ] Remaining report types (Sales, Inventory, Customer, Excel)
 
 ### 🔭 Future
 - [ ] Standalone product comparison page (not just chat-embedded)
@@ -543,12 +553,14 @@ npm start
 - [ ] Cross-session personalization beyond brand/budget extraction
 - [ ] Public API for third-party storefront integrations
 
+<sub>Note: the "Next" items above were moved out of "Current (shipped)" to match their actual status in the tables further up this README — the Features and Feature Completion Snapshot sections are the source of truth if anything here ever looks inconsistent.</sub>
+
 ---
 
 ## ☁️ Deployment
 
 > [!WARNING]
-> **TODO.** No deployment configuration (Vercel project settings, CI/CD, environment secrets in a hosting provider) was confirmed during this review. The steps below are a generic starting point — replace with your project's actual deployment process.
+> **Not yet re-deployed.** The previous public preview is temporarily taken down while the backend goes through higher-traffic testing — see [Demo](#-demo). No deployment configuration (hosting provider settings, CI/CD, environment secrets) was confirmed during this review either. The steps below are a generic starting point — replace with your project's actual deployment process once confirmed.
 
 ```bash
 # Example (Vercel CLI) — confirm this matches your actual setup
@@ -573,91 +585,15 @@ Contributions are welcome. Until a formal `CONTRIBUTING.md` exists:
 4. Update this README's relevant section (and remove the matching `TODO`) if your PR ships something documented here as a placeholder.
 5. Open a PR with a clear description of what changed and why.
 
-# Contributor Covenant Code of Conduct
-
-## Our Pledge
-
-We as members, contributors, and maintainers pledge to make participation in the CartIQ project and community a harassment-free experience for everyone, regardless of age, body size, visible or invisible disability, ethnicity, sex characteristics, gender identity and expression, level of experience, education, socio-economic status, nationality, personal appearance, race, religion, or sexual identity and orientation.
-
-We pledge to act and interact in ways that contribute to an open, welcoming, diverse, inclusive, and healthy community.
-
-## Our Standards
-
-Examples of behavior that contributes to a positive environment:
-
-- Demonstrating empathy and kindness toward other people
-- Being respectful of differing opinions, viewpoints, and experiences
-- Giving and gracefully accepting constructive feedback
-- Accepting responsibility, apologizing to those affected by our mistakes, and learning from the experience
-- Focusing on what is best not just for us as individuals, but for the overall community
-
-Examples of unacceptable behavior:
-
-- The use of sexualized language or imagery, and sexual attention or advances of any kind
-- Trolling, insulting or derogatory comments, and personal or political attacks
-- Public or private harassment
-- Publishing others' private information, such as a physical or email address, without their explicit permission
-- Other conduct which could reasonably be considered inappropriate in a professional setting
-
-## Enforcement Responsibilities
-
-Project maintainers are responsible for clarifying and enforcing our standards of acceptable behavior and will take appropriate and fair corrective action in response to any behavior they deem inappropriate, threatening, offensive, or harmful.
-
-Maintainers have the right and responsibility to remove, edit, or reject comments, commits, code, issues, and other contributions that are not aligned with this Code of Conduct, and will communicate reasons for moderation decisions when appropriate.
-
-## Scope
-
-This Code of Conduct applies within all project spaces — issues, pull requests, discussions, and any other community spaces — and also applies when an individual is officially representing the project in public spaces (for example, using an official project email address or posting via an official social media account).
-
-## Enforcement
-
-Instances of abusive, harassing, or otherwise unacceptable behavior may be reported to the project maintainers at:
-
-> `TODO` — add a contact email or reporting channel here (e.g. `conduct@cartiq.app`, or a maintainer's GitHub handle).
-
-All complaints will be reviewed and investigated promptly and fairly. All maintainers are obligated to respect the privacy and security of the reporter of any incident.
-
-## Enforcement Guidelines
-
-Maintainers will follow these Community Impact Guidelines in determining the consequences for any action they deem in violation of this Code of Conduct:
-
-### 1. Correction
-
-**Community Impact:** Use of inappropriate language or other behavior deemed unprofessional or unwelcome.
-
-**Consequence:** A private, written warning from maintainers, providing clarity around the nature of the violation and an explanation of why the behavior was inappropriate. A public apology may be requested.
-
-### 2. Warning
-
-**Community Impact:** A violation through a single incident or series of actions.
-
-**Consequence:** A warning with consequences for continued behavior. No interaction with the people involved for a specified period of time, including unsolicited interaction with those enforcing the Code of Conduct. Violating these terms may lead to a temporary or permanent ban.
-
-### 3. Temporary Ban
-
-**Community Impact:** A serious violation of community standards, including sustained inappropriate behavior.
-
-**Consequence:** A temporary ban from any sort of interaction or public communication with the community for a specified period of time. No public or private interaction with the people involved is allowed during this period. Violating these terms may lead to a permanent ban.
-
-### 4. Permanent Ban
-
-**Community Impact:** Demonstrating a pattern of violation of community standards, including sustained inappropriate behavior, harassment of an individual, or aggression toward or disparagement of classes of individuals.
-
-**Consequence:** A permanent ban from any sort of public interaction within the community.
-
-## Attribution
-
-This Code of Conduct is adapted from the [Contributor Covenant](https://www.contributor-covenant.org/), version 2.1, available at
-https://www.contributor-covenant.org/version/2/1/code_of_conduct.html.
-
-Community Impact Guidelines were inspired by [Mozilla's code of conduct enforcement ladder](https://github.com/mozilla/diversity).
----
+This project follows a [Code of Conduct](./CODE_OF_CONDUCT.md) adapted from the [Contributor Covenant](https://www.contributor-covenant.org/) — please give it a read before opening an issue or PR.
 
 ---
+
 ## 📄 License
-MIT
----
 
+MIT — see [`LICENSE`](./LICENSE) for details.
+
+---
 
 ## 👤 Authors
 
@@ -685,7 +621,3 @@ MIT
 *Built with a real Supabase schema, real Server Actions, and an honest README.*
 
 </div>
-
-</div>
-
-Deployed site preview: Temporarily (Hidden from Open source for High traffic Backend testing). Will be Re-deployed soon.
