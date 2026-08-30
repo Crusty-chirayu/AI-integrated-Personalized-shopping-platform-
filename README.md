@@ -11,6 +11,7 @@
 [![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![OpenRouter](https://img.shields.io/badge/OpenRouter-DeepSeek-8A2BE2?style=for-the-badge&logo=OpenAI&logoColor=white)](https://openrouter.ai/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-14b8a6?style=for-the-badge)](#-license)
 
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)](#-contributing)
@@ -19,10 +20,27 @@
 [![AI Powered](https://img.shields.io/badge/AI-Powered-8A2BE2?style=flat-square)]()
 [![Honesty First](https://img.shields.io/badge/Docs-Honesty%20First-14b8a6?style=flat-square)](#-feature-completion-snapshot)
 
+<a href="#-about-cartiq">
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=20&pause=1200&color=14B8A6&center=true&vCenter=true&width=650&lines=Describe+what+you+need+%E2%80%94+not+which+filters+to+click;Real+products.+Real+inventory.+Real+Server+Actions;Every+claim+below+is+backed+by+code%2C+or+marked+TODO." alt="Typing SVG" />
+</a>
+
 </div>
 
 > [!NOTE]
 > **Honesty first.** Every feature described below is backed by code that actually exists in this repository. Anywhere a claim couldn't be verified against the codebase, you'll see a clearly marked `> TODO` block instead of invented functionality. That rule applies to this whole README, including the sections below — nothing here inflates a number that the code doesn't back up.
+
+---
+
+## 🔑 Legend
+
+Used consistently across every table below — scan for these instead of re-reading prose:
+
+| Symbol | Meaning |
+|:---:|---|
+| ✅ | Shipped and confirmed against the actual codebase |
+| ⚠️ | Partially built — the pieces exist, the flow isn't complete |
+| 🚧 | UI/scaffolding exists, wiring is a `TODO` |
+| `TODO` | Not confirmed during review — don't present as fact until verified |
 
 ---
 
@@ -42,6 +60,7 @@
 
 - [About CartIQ](#-about-cartiq)
 - [Why CartIQ?](#-why-cartiq)
+- [What Makes This Different](#-what-makes-this-different)
 - [Feature Completion Snapshot](#-feature-completion-snapshot)
 - [Features](#-features)
   - [Customer Features](#customer-features)
@@ -52,7 +71,9 @@
   - [Developer Features](#developer-features)
 - [Screenshots](#-screenshots)
 - [Architecture](#-architecture)
+- [Design System](#-design-system)
 - [Tech Stack](#-tech-stack)
+- [Project Evolution](#-project-evolution)
 - [Folder Structure](#-folder-structure)
 - [Installation Guide](#-installation-guide)
 - [Environment Variables](#-environment-variables)
@@ -61,6 +82,7 @@
 - [Security](#-security)
 - [AI Architecture](#-ai-architecture)
 - [Roadmap](#-roadmap)
+- [FAQ](#-faq)
 - [Deployment](#-deployment)
 - [Contributing](#-contributing)
 - [License](#-license)
@@ -95,6 +117,20 @@ CartIQ's assistant is built to sit inside that gap: a customer can type somethin
 
 ---
 
+## 🏆 What Makes This Different
+
+A lot of portfolio e-commerce projects share the same tells: mock JSON standing in for a database, an "admin dashboard" wired to static numbers, and a README that claims features nobody can click through to. CartIQ is built — and documented — to avoid all three:
+
+| Typical template project | CartIQ |
+|---|---|
+| Mock/static product data | Live Supabase `products` table, same data everywhere |
+| Admin stats hardcoded in the UI | Dashboard numbers computed from real Supabase queries |
+| Client calls hit the database directly for everything | Privileged writes isolated behind Server Actions + a service-role client the browser never sees |
+| README lists "AI-powered" with no detail | [AI Architecture](#-ai-architecture) names the actual provider, pipeline, and what's still unverified |
+| Docs quietly go stale as the code moves on | Every completion number is pinned to the tables that produced it — see the note under [Feature Completion Snapshot](#-feature-completion-snapshot) |
+
+---
+
 ## 📊 Feature Completion Snapshot
 
 > Counted directly from the status columns in [Features](#-features) below — not a vibe estimate. If a number here ever drifts from the tables below, the tables are the source of truth.
@@ -105,7 +141,7 @@ CartIQ's assistant is built to sit inside that gap: a customer can type somethin
 |---|:---:|---|:---:|
 | 🛍️ Customer Experience | 11 / 12 features | Full Razorpay checkout integration | ![92%](https://progress-bar.xyz/92/?title=shipped&color=14b8a6) |
 | 🛠️ Admin Tools | 7 / 8 features | Sales / Inventory / Customer / Excel reports | ![88%](https://progress-bar.xyz/88/?title=shipped&color=14b8a6) |
-| 🤖 AI Assistant Core | 5 / 5 scoped features | Provider internals & RAG scope unconfirmed — see [AI Architecture](#-ai-architecture) | ![100%](https://progress-bar.xyz/100/?title=of+scope&color=8A2BE2) |
+| 🤖 AI Assistant Core | 5 / 5 scoped features | RAG scope & multi-session memory — see [AI Architecture](#-ai-architecture) | ![100%](https://progress-bar.xyz/100/?title=of+scope&color=8A2BE2) |
 | 🔐 Security | App-layer auth, scoping & service-role isolation | Database-level RLS policies not yet confirmed | ![⚠](https://progress-bar.xyz/70/?title=needs+RLS+audit&color=f59e0b) |
 
 </div>
@@ -157,6 +193,7 @@ CartIQ's AI layer is intentionally scoped today — it's a real, working assista
 - **Persistent conversations** — each conversation is created, titled (auto-truncated from the first message), and stored via Supabase, so returning users see their chat history and can switch between past conversations from a sidebar.
 - **Lightweight preference memory** — `extractPreference()` scans user messages for signals like a favorite brand or a preferred budget and persists them via `savePreference()`, so the assistant has some durable context beyond a single conversation.
 - **Structured response types** — the backend can return plain text, a product carousel, or a formatted comparison, and the UI renders each differently.
+- **Model provider** — requests are routed through **OpenRouter** to **DeepSeek**, sitting behind an intent-detection and NLP-dictionary routing layer rather than calling the model on every raw message — see [AI Architecture](#-ai-architecture) for the full pipeline.
 
 ### Security Features
 
@@ -289,6 +326,19 @@ sequenceDiagram
 
 ---
 
+## 🎨 Design System
+
+CartIQ's UI follows a single, consistently-applied visual language rather than default component-library styling:
+
+- **Palette:** a premium indigo-to-teal gradient carried across major pages and components — not just the marketing/landing surfaces.
+- **Consistency constraint:** redesign passes have at times been deliberately scoped to a single file with no new components and no file splits, to keep the visual language from drifting between areas built at different times.
+- **Icons:** Lucide React, used consistently rather than mixed with ad hoc SVGs.
+- **Motion:** Framer Motion for transitions and interactive feedback (toasts, panel opens, chat message entry).
+
+<sub>`TODO`: drop in a palette swatch image or Tailwind config excerpt here once the design tokens are centralized.</sub>
+
+---
+
 ## 🧰 Tech Stack
 
 | Layer | Technology |
@@ -304,9 +354,22 @@ sequenceDiagram
 | **Server-Side Mutations** | Next.js Server Actions |
 | **PDF Generation** | jsPDF + jspdf-autotable |
 | **Payments (partial)** | Razorpay fields present in schema — full integration `TODO` |
-| **AI / Chat Backend** | Custom `/api/ai/chat` route — internal implementation `TODO` |
+| **AI / Chat Backend** | DeepSeek via **OpenRouter**, behind an intent-detection + NLP-dictionary routing/orchestration layer — see [AI Architecture](#-ai-architecture) |
 | **Deployment** | `TODO` — not confirmed (commonly Vercel for this stack, but unverified) |
 | **Package Manager** | `TODO` — confirm npm / pnpm / yarn from lockfile |
+
+---
+
+## 🧬 Project Evolution
+
+CartIQ didn't arrive at its current stack in one pass — worth documenting, since the choices reflect real trade-offs rather than a from-scratch "correct" design:
+
+| Area | Earlier | Current | Why it likely moved |
+|---|---|---|---|
+| Database & media | MongoDB Atlas + Cloudinary | Supabase (Postgres + built-in storage/auth) | Consolidates DB, auth, and storage into one provider instead of three separately-managed services |
+| AI-assisted development | Built initially with ChatGPT | Development moved to Claude | Ongoing iteration on the codebase |
+
+<sub>This section documents how the project got here, not a claim about what's "better" in the abstract — both are legitimate stacks. `TODO`: expand with the actual migration PRs/commits if you want this section to be independently verifiable.</sub>
 
 ---
 
@@ -399,6 +462,8 @@ npm run build
 npm start
 ```
 
+<sub>💡 Once the public repo path above is finalized, this is a good spot for a live `star-history.com` chart and dynamic `shields.io` badges (stars, last commit, open issues) — intentionally left out for now rather than pointed at a guessed path.</sub>
+
 ---
 
 ## 🔐 Environment Variables
@@ -408,11 +473,11 @@ npm start
 | `NEXT_PUBLIC_SUPABASE_URL` | ✅ | Client & server | Your Supabase project URL. Public — safe to expose to the browser. |
 | `SUPABASE_SERVICE_ROLE_KEY` | ✅ | Server only | Supabase **service-role** key. Bypasses Row Level Security. **Never** expose this to the client or commit it to version control. |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | ⚠️ Likely required | Client | Referenced implicitly by any browser-side Supabase client, but not directly confirmed in the files reviewed — `TODO`, confirm in `src/lib/supabase.ts`. |
-| AI provider key (e.g. `OPENAI_API_KEY`) | `TODO` | `/api/ai/chat` | Not confirmed — depends on what `/api/ai/chat` actually calls internally. |
+| OpenRouter API key (e.g. `OPENROUTER_API_KEY`) | ✅ Provider confirmed | `/api/ai/chat` | Confirmed: the assistant calls **DeepSeek through OpenRouter**. Exact env variable name — `TODO`, confirm against `src/lib/ai/`. |
 | Razorpay keys (`RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`) | `TODO` | Checkout (unbuilt) | Schema has `razorpay_order_id` / `razorpay_payment_id` columns, but the checkout integration that would consume these keys wasn't confirmed to exist yet. |
 
 > [!IMPORTANT]
-> `SUPABASE_SERVICE_ROLE_KEY` must only ever be read on the server (`getSupabaseAdmin()`). If you see it referenced in any file marked `"use client"`, that's a security bug — fix it before deploying.
+> `SUPABASE_SERVICE_ROLE_KEY` must only ever be read on the server (`getSupabaseAdmin()`). If you see it referenced in any file marked `"use client"`, that's a security bug — fix it before deploying. The same rule applies to whatever OpenRouter key variable ends up confirmed above.
 
 ---
 
@@ -485,7 +550,7 @@ npm start
 | Endpoint / Action | Type | Purpose |
 |---|---|---|
 | `updateFulfillmentStatus(orderId, status)` | Server Action (`admin/orders/actions.ts`) | Updates `orders.fulfillment_status` using the service-role client; validated against a fixed status list. |
-| `POST /api/ai/chat` | Route Handler | Receives `{ sessionId, message }`, returns `{ type, message, products?, comparison? }`. **Internal implementation not reviewed.** |
+| `POST /api/ai/chat` | Route Handler | Receives `{ sessionId, message }`, returns `{ type, message, products?, comparison? }`. Routes through intent detection → OpenRouter/DeepSeek — see [AI Architecture](#-ai-architecture). |
 | `GET /api/reports/orders` | Route Handler | Returns order data as JSON, consumed by the admin PDF export. **Internal implementation not reviewed.** |
 
 > [!WARNING]
@@ -514,16 +579,35 @@ npm start
 2. The response shape is `{ type: "text" | "products" | "comparison" | "order", message, products?, comparison? }` — the frontend renders each `type` differently (plain text, a `ProductCarousel`, or a `ComparisonCard`).
 3. Every user and assistant message is persisted via `saveMessage()`, and full conversation history is reloaded via `getMessages()` / `getLatestConversation()` on mount.
 4. A lightweight preference extractor (`extractPreference()`) looks for a favorite brand or budget signal in the user's message and stores it via `savePreference()`.
+5. **Model provider:** requests are ultimately served by **DeepSeek, called through OpenRouter** rather than a direct provider integration.
+6. **Request routing:** before a message reaches the model, it passes through an intent-detection stage and NLP-dictionary matching, with a routing/orchestration layer coordinating the pipeline across a handful of backend modules — this determines *how* a message is handled (e.g. product search vs. general chat) rather than sending every raw message straight to DeepSeek.
+
+```mermaid
+flowchart LR
+    U["User message<br/>(typed or voice)"] --> ID["Intent Detection"]
+    ID --> DICT["NLP Dictionary<br/>Matching"]
+    DICT --> ROUTE["Routing Layer"]
+    ROUTE -->|product query| PROD["Supabase products query"]
+    ROUTE -->|general/complex| ORCH["Orchestration Layer"]
+    ORCH --> OR["OpenRouter"]
+    OR --> DS["DeepSeek"]
+    PROD --> RESP["Structured Response<br/>text / products / comparison"]
+    DS --> RESP
+    RESP --> UI["ChatWindow renders reply"]
+
+    style OR fill:#8A2BE2,color:#fff
+    style DS fill:#1a1b27,color:#8A2BE2,stroke:#8A2BE2
+```
 
 **What's explicitly not confirmed** (do not present these as shipped without verifying first):
 
-- Which LLM/AI provider `/api/ai/chat` actually calls.
-- Whether responses are generated via retrieval-augmented generation against the `products` table, a fixed set of prompt templates, or something else.
+- The exact split of responsibility across the intent-detection / dictionary / orchestration modules — the diagram above shows the confirmed *shape* of the pipeline, not a file-by-file audit.
+- Whether responses are generated via retrieval-augmented generation against the `products` table, a fixed set of prompt templates, or a hybrid of the two.
 - Whether "context awareness" spans multiple sessions or is limited to the extracted brand/budget preferences described above.
 - Whether product explanations are AI-generated text or templated strings.
 
 > [!IMPORTANT]
-> Document `/api/ai/chat`'s real implementation here once reviewed. An AI-focused README is only credible if the AI section is exactly as accurate as the rest of it.
+> This section is more filled-in than the original draft, but the module-by-module breakdown of `/api/ai/chat` is still worth a dedicated pass — replace the diagram above with real file references once verified line-by-line. An AI-focused README is only credible if the AI section is exactly as accurate as the rest of it.
 
 ---
 
@@ -539,7 +623,7 @@ npm start
 
 ### 🚧 Next
 - [ ] Razorpay checkout flow, end-to-end
-- [ ] Document `/api/ai/chat`'s real implementation
+- [ ] Document the intent-detection/orchestration pipeline module-by-module
 - [ ] Add and confirm Row Level Security policies across every table
 - [ ] Remaining report types (Sales, Inventory, Customer, Excel)
 
@@ -553,7 +637,46 @@ npm start
 - [ ] Cross-session personalization beyond brand/budget extraction
 - [ ] Public API for third-party storefront integrations
 
+```mermaid
+flowchart LR
+    subgraph Now["✅ Now"]
+        n1[Core storefront]
+        n2[AI chat + voice]
+        n3[Admin dashboard]
+    end
+    subgraph Next["🚧 Next"]
+        x1[Razorpay checkout]
+        x2[RLS policies]
+        x3[Remaining reports]
+    end
+    subgraph Later["🔭 Future / V2"]
+        f1[Comparison page]
+        f2[Customer analytics]
+        f3[RAG explanations]
+    end
+    Now --> Next --> Later
+```
+
 <sub>Note: the "Next" items above were moved out of "Current (shipped)" to match their actual status in the tables further up this README — the Features and Feature Completion Snapshot sections are the source of truth if anything here ever looks inconsistent.</sub>
+
+---
+
+## ❓ FAQ
+
+**Is CartIQ production-ready?**
+Not yet, by its own docs — the two gating items are the Razorpay checkout flow and confirming Postgres RLS policies. See [Feature Completion Snapshot](#-feature-completion-snapshot).
+
+**What AI model does it use?**
+DeepSeek, called through OpenRouter, behind an intent-detection and routing layer — see [AI Architecture](#-ai-architecture).
+
+**Can I use this as a template for my own store?**
+The core commerce flows and admin tooling are real and functional, but treat checkout and RLS as required work, not optional polish, before handling real payments or real user data.
+
+**Why Supabase instead of a custom backend?**
+It bundles Postgres, Auth, and storage behind one client, which is part of why the project migrated to it — see [Project Evolution](#-project-evolution).
+
+**Is the AI a full autonomous shopping agent?**
+No — by design. It's scoped to conversational discovery, comparison, and light preference memory, not autonomous purchasing decisions.
 
 ---
 
@@ -571,7 +694,7 @@ vercel
 Required at minimum in your hosting provider's environment settings:
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `SUPABASE_SERVICE_ROLE_KEY`
-- Any AI provider key once confirmed (see [Environment Variables](#-environment-variables))
+- Your OpenRouter API key (see [Environment Variables](#-environment-variables))
 
 ---
 
@@ -607,6 +730,7 @@ MIT — see [`LICENSE`](./LICENSE) for details.
 
 - [Next.js](https://nextjs.org/) — application framework
 - [Supabase](https://supabase.com/) — database, auth, and backend infrastructure
+- [OpenRouter](https://openrouter.ai/) & [DeepSeek](https://www.deepseek.com/) — AI model access
 - [Tailwind CSS](https://tailwindcss.com/) — styling
 - [Framer Motion](https://www.framer.com/motion/) — animation
 - [Lucide](https://lucide.dev/) — icon set
